@@ -99,6 +99,29 @@ interface (what) VS. implementation (how)
 double area(Circle x); //in C++: pass-by-copy; in Java, pass-by-reference
 
 
+
+class Blah
+{
+	...
+		void g(Foo f, Foo& fr, Foo* fp);  // just need to say   class Foo;
+	...
+		Foo* m_fp;           // just need to say   class Foo;
+	Foo* m_fpa[10];      // just need to say   class Foo;
+	vector<Foo*> m_fpv;  // just need to say   class Foo;
+
+	Foo m_f;             // must #include Foo.h
+	Foo m_fa[10];        // must #include Foo.h
+	vector<Foo> m_fv;    // must #include Foo.h
+};
+
+void Blah::g(Foo f, Foo& fr, Foo* fp)
+{
+	Foo f2(10, 20);      // must #include Foo.h
+	f.gleep();           // must #include Foo.h
+	fr.gleep();          // must #include Foo.h
+	fp->gleep();         // must #include Foo.h
+}
+
 */
 
 
