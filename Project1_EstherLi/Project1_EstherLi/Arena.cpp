@@ -6,8 +6,7 @@
 #include <iostream>
 #include <string>
 #include <random>
-#include <utility>
-#include <cstdlib>
+
 using namespace std;
 
 class Zombie;
@@ -20,6 +19,7 @@ class utilities;
 ///////////////////////////////////////////////////////////////////////////
 
 Arena::Arena(int nRows, int nCols)
+	:m_history(nRows, nCols)
 {
 	if (nRows <= 0 || nCols <= 0 || nRows > MAXROWS || nCols > MAXCOLS)
 	{
@@ -31,7 +31,6 @@ Arena::Arena(int nRows, int nCols)
 	m_cols = nCols;
 	m_player = nullptr;
 	m_nZombies = 0;
-	m_history = new History(m_rows, m_cols);
 }
 
 Arena::~Arena()
@@ -39,7 +38,6 @@ Arena::~Arena()
 	for (int k = 0; k < m_nZombies; k++)
 		delete m_zombies[k];
 	delete m_player;
-	delete m_history;
 }
 
 int Arena::rows() const
@@ -207,5 +205,5 @@ bool Arena::moveZombies()
 }
 
 History& Arena::history() {
-	return *m_history;
+	return m_history;
 }

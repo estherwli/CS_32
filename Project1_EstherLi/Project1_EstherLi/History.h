@@ -12,7 +12,7 @@ public:
 private:
 	int m_rows;
 	int m_cols;
-	int m_dead[MAXZOMBIES][2];
+	int m_dead[MAXZOMBIES][2]; //2D array to store dead zombies' coordinates
 	int m_nDead;
 };
 

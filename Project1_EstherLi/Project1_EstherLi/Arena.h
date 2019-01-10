@@ -2,10 +2,10 @@
 #define ARENA_H
 
 #include "globals.h"
+#include "History.h"
 
 class Zombie;
 class Player;
-class History;
 
 class Arena
 {
@@ -28,7 +28,6 @@ public:
 	bool   addPlayer(int r, int c);
 	bool   attackZombieAt(int r, int c, int dir);
 	bool   moveZombies();
-
 	History& history();
 
 private:
@@ -37,7 +36,7 @@ private:
 	Player* m_player;
 	Zombie* m_zombies[MAXZOMBIES];
 	int     m_nZombies;
-	History* m_history;
+	History m_history;
 };
 
 #endif GLOBALS_H

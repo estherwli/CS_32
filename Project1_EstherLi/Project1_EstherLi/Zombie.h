@@ -1,8 +1,6 @@
 #ifndef ZOMBIE_H
 #define ZOMBIE_H
 
-#include "globals.h"
-
 class Arena;
 
 class Zombie

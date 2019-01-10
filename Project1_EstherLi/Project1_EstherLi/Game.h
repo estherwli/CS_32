@@ -1,8 +1,6 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include "globals.h"
-
 class Arena;
 
 class Game

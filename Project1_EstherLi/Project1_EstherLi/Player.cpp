@@ -3,8 +3,7 @@
 #include <iostream>
 #include <string>
 #include <random>
-#include <utility>
-#include <cstdlib>
+
 using namespace std;
 
 class Arena;

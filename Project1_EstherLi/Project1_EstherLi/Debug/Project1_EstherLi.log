@@ -1,2 +1,7 @@
 ﻿  Arena.cpp
+  Game.cpp
+  main.cpp
+  Player.cpp
+  Zombie.cpp
+  Generating Code...
   Project1_EstherLi.vcxproj -> C:\Users\Esther\Desktop\CS_32\Project1_EstherLi\Debug\Project1_EstherLi.exe
