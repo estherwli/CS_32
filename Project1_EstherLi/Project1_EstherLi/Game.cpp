@@ -4,10 +4,7 @@
 #include "globals.h"
 #include <iostream>
 #include <string>
-
 using namespace std;
-
-
 
 int decodeDirection(char dir)
 {
@@ -94,17 +91,18 @@ void Game::play()
 				continue;
 			case 'q':
 				return;
-			case 'h':
-				m_arena->history().display();
-				cout << "Press enter to continue.";
-				cin.ignore(10000, '\n');
-				break;
 			case 'u':
 			case 'd':
 			case 'l':
 			case 'r':
 				p->moveOrAttack(decodeDirection(action[0]));
 				break;
+			case 'h':
+				m_arena->history().display();
+				cout << "Press enter to continue.";
+				cin.ignore(10000, '\n');
+				m_arena->display();
+				continue;
 			}
 		}
 		m_arena->moveZombies();

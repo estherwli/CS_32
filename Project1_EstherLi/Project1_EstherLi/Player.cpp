@@ -2,12 +2,7 @@
 #include "Arena.h"
 #include <iostream>
 #include <string>
-#include <random>
-
 using namespace std;
-
-class Arena;
-
 
 ///////////////////////////////////////////////////////////////////////////
 //  Player implementations

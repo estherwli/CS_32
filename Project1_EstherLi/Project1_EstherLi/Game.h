@@ -20,4 +20,4 @@ private:
 
 int decodeDirection(char dir);
 
-#endif
+#endif //GAME_H

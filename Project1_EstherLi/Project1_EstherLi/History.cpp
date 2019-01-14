@@ -1,6 +1,5 @@
 #include "History.h"
 #include <iostream>
-
 using namespace std;
 
 History::History(int nRows, int nCols) {
@@ -20,7 +19,6 @@ bool History::record(int r, int c) {
 }
 
 void History::display() const {
-	clearScreen();
 	char grid[MAXROWS][MAXCOLS];
 
 	for (int r = 0; r < m_rows; r++)
@@ -38,6 +36,8 @@ void History::display() const {
 			grid[row][col] += 1; //if this is the 2nd-25th zombie to die here
 	}
 
+	//Draw the grid
+	clearScreen();
 	for (int r = 0; r < m_rows; r++)
 	{
 		for (int c = 0; c < m_cols; c++)

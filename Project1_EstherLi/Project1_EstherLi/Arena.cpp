@@ -6,12 +6,7 @@
 #include <iostream>
 #include <string>
 #include <random>
-
 using namespace std;
-
-class Zombie;
-class Player; 
-class utilities;
 
 
 ///////////////////////////////////////////////////////////////////////////
