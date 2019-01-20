@@ -16,4 +16,4 @@ private:
 	int m_nDead;
 };
 
-#endif
+#endif //HISTORY_H

@@ -4,5 +4,6 @@
   Player.cpp
   Zombie.cpp
   main.cpp
+  utilities.cpp
   Generating Code...
   Project1_EstherLi.vcxproj -> C:\Users\Esther\Desktop\CS_32\Project1_EstherLi\Debug\Project1_EstherLi.exe

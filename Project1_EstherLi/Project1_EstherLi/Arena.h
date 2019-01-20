@@ -38,4 +38,4 @@ private:
 	History m_history;
 };
 
-#endif GLOBALS_H
+#endif //ARENA_H

@@ -24,4 +24,4 @@ const int NUMDIRS = 4;
 int randInt(int min, int max);
 void clearScreen();
 
-#endif
+#endif //GLOBALS_H

@@ -24,4 +24,4 @@ private:
 	int    m_health;
 };
 
-#endif
+#endif //ZOMBIE_H

@@ -28,4 +28,4 @@ private:
 	bool   m_dead;
 };
 
-#endif
+#endif //PLAYER_H
