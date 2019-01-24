@@ -1,8 +1,7 @@
-#ifndef NEWSET_H
-#define NEWSET_H
-#include <iostream>
+#ifndef NEWSET_INCLUDED
+#define NEWSET_INCLUDED
 #include <string>
-using ItemType = std::string;
+using ItemType = unsigned long;
 
 const int DEFAULT_MAX_ITEMS = 250;
 
@@ -14,6 +13,8 @@ public:
 	Set(int value);	       // Overloaded constructor
 
 	Set(const Set& other); // Copy constructor
+
+	Set& operator=(const Set& other); // assignment operator
 
 	~Set();				   // Destructor
 

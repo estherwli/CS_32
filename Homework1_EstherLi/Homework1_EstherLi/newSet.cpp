@@ -9,6 +9,8 @@ Set::Set() {
 }
 
 Set::Set(int value) {
+	if (value < 0)
+		value = DEFAULT_MAX_ITEMS;
 	m_size = 0;
 	m_max = value;
 	m_items = new ItemType[m_max];
@@ -20,6 +22,18 @@ Set::Set(const Set& other) {
 	m_items = new ItemType[m_max];
 	for (int i = 0; i < m_size; i++)
 		m_items[i] = other.m_items[i];
+}
+
+Set& Set::operator=(const Set& other) {
+	if (&other == this)
+		return *this;
+	delete[] m_items;
+	m_size = other.m_size;
+	m_max = other.m_max;
+	m_items = new ItemType[m_max];
+	for (int i = 0; i < m_max; i++)
+		m_items[i] = other.m_items[i];
+	return *this;
 }
 
 Set::~Set() {
@@ -40,16 +54,11 @@ int Set::size() const {
 bool Set::insert(const ItemType& value) {
 	if (m_size + 1 > m_max)
 		return false;
-	else if (m_size == 0)
-		m_items[0] = value;
-	else {
-		for (int i = 0; i < m_size; i++) {
-			if (value == m_items[i])
-				return false;
-			else
-				m_items[m_size] = value;
-		}
+	for (int i = 0; i < m_size; i++) {
+		if (value == m_items[i])
+			return false;
 	}
+	m_items[m_size] = value;
 	m_size++;
 	return true;
 }
@@ -57,7 +66,10 @@ bool Set::insert(const ItemType& value) {
 bool Set::erase(const ItemType& value) {
 	for (int i = 0; i < size(); i++) {
 		if (value == m_items[i])
-			m_items[i] = m_items[m_size - 1];
+		{
+			for (int j = i; j < size() - 1; j++)
+				m_items[j] = m_items[j + 1];
+		}
 		else
 			return false;
 	}
@@ -79,7 +91,7 @@ bool Set::get(int i, ItemType& value) const {
 
 	for (int j = 0; j < size(); j++) {
 		int count = 0;
-		for (int k = 0; j < size(); j++) {
+		for (int k = 0; k < size(); k++) {
 			if (m_items[j] > m_items[k])
 				count++; //records how many elements m_items[j] is greater than
 		}
