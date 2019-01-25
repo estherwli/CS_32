@@ -28,9 +28,11 @@ private:
 
 	int m_size;
 	Node *head;
+	Node *tail;
 };
 
-
+void unite(const Set& s1, const Set& s2, Set& result);
+void subtract(const Set& s1, const Set& s2, Set& result);
 
 
 #endif 
