@@ -22,19 +22,23 @@ Set::~Set() {
 
 //copy constructor
 Set::Set(const Set& other) {
-	m_size = other.m_size;
-	head == nullptr;
-	tail == nullptr;
-	for (int i = 0; i < m_size; i++) { 
+	m_size = 0;
+	head = nullptr;
+	tail = nullptr;
+	for (int i = 0; i < other.m_size; i++) {
 		ItemType temp;
-		other.get(i, temp); 
-		insert(temp); //copies each node to new set
+		other.get(i, temp);
+		insert(temp); //copies each node to new set and updates m_size
 	}
 }
 
 //assignment operator
 Set& Set::operator=(const Set& other) {
-
+	if (&other == this)
+		return *this;
+	Set temp(other);
+	swap(temp);
+	return *this;
 }
 
 bool Set::empty() const {
@@ -49,6 +53,13 @@ int Set::size() const {
 }
 
 bool Set::insert(const ItemType& value) {
+	Node* p = head;
+	while (p != nullptr) {
+		if (p->data == value)
+			return false;
+		p = p->next;
+	}
+	
 	//allocate new node
 	Node *latest = new Node;
 	latest->data = value;
@@ -56,16 +67,20 @@ bool Set::insert(const ItemType& value) {
 	//case 1: empty set
 	if (head == nullptr) {
 		head = latest;
+		tail = latest;
 		head->last = nullptr;
-		head->next = tail;
+		head->next = nullptr;
 	}
 
 	//case 2: set has >= 1 nodes
 	else {
 		tail->next = latest;
+		latest->last = tail;
 		latest->next = nullptr;
+		tail = latest;
 	}
 	m_size++;
+	return true;
 }
 
 bool Set::erase(const ItemType& value) {
@@ -82,17 +97,16 @@ bool Set::erase(const ItemType& value) {
 	//case 2: deleting interior node or tail node
 	Node *p = head;
 	while (p != nullptr) {
-		if (p->next == nullptr)
-			return false;
 		if (p->next != nullptr && p->next->data == value) {
 			Node *killMe = p->next;
 			p->next = killMe->next;
 			delete killMe;
+			m_size--;
+			return true;
 		}
 		p = p->next;
 	}
-	m_size--;
-	return true;
+	return false;
 }
 
 bool Set::contains(const ItemType& value) const {
@@ -111,66 +125,76 @@ bool Set::get(int pos, ItemType& value) const {
 	//invalid conditions
 	if (head == nullptr || pos < 0 || pos >= m_size)
 		return false;
-	
+
 	Node *p = head;
-	int count = 0;
-	while (p != nullptr) { //traverse through entire set
+	while (p != nullptr) { //traverse through entire set (past last node)
+		int count = 0;
 		Node *temp = head;
-		while (temp != nullptr) {
-			if (p > temp)
+		while (temp != nullptr) { 
+			if (p->data > temp->data)
 				count++; //records how many values p is strictly greater than
-			if (count == pos) {
-				value = p->data;
-				return true;
-			}
 			temp = temp->next;
+		}
+		if (count == pos) {
+			value = p->data;
+			return true;
 		}
 		p = p->next;
 	}
 	return false;
 }
 
-	void Set::swap(Set& other) {
-		//swaps head
-		Node *tempHead = head;
-		head = other.head;
-		other.head = tempHead;
+void Set::swap(Set& other) {
+	//swaps head
+	Node *tempHead = head;
+	head = other.head;
+	other.head = tempHead;
 
-		//swaps tail
-		Node *tempTail = tail;
-		tail = other.tail;
-		other.tail = tempTail;
+	//swaps tail
+	Node *tempTail = tail;
+	tail = other.tail;
+	other.tail = tempTail;
 
-		//swaps size
-		int tempSize = m_size;
-		m_size = other.m_size;
-		other.m_size = tempSize;
+	//swaps size
+	int tempSize = m_size;
+	m_size = other.m_size;
+	other.m_size = tempSize;
+}
+
+void unite(const Set& s1, const Set& s2, Set& result) {
+	ItemType temp;
+	Set tempSet; //in case of aliasing
+
+	//adds all values from s1 to result
+	for (int i = 0; i < s1.size(); i++) {
+		s1.get(i, temp);
+		tempSet.insert(temp);
 	}
 
-	void unite(const Set& s1, const Set& s2, Set& result) {
-		ItemType temp;
+	//adds values from s2 that did not appear in s1 to result
+	for (int i = 0; i < s2.size(); i++) {
+		s2.get(i, temp);
+		if (!tempSet.contains(temp))
+			tempSet.insert(temp);
+	}
+	result = tempSet; //assigns tempSet to result
+}
 
-		//empties result 
-		while (result.size() > 0) {
-			result.get(0, temp);
-			result.erase(temp);
-		}
+void subtract(const Set& s1, const Set& s2, Set& result) {
+	ItemType temp;
+	Set tempSet;
 
-		//adds all values from s1 to result
-		for (int i = 0; i < s1.size(); i++) {
-			s1.get(i, temp);
-			result.insert(temp);
-		}
-
-		//adds values from s2 that did not appear in s1 to result
-		for (int i = 0; i < s2.size(); i++) {
-			s2.get(i, temp);
-			if (!result.contains(temp))
-				result.insert(temp);
-		}
+	//adds all values from s1 to result
+	for (int i = 0; i < s1.size(); i++) {
+		s1.get(i, temp);
+		tempSet.insert(temp);
 	}
 
-	void subtract(const Set& s1, const Set& s2, Set& result) {
-
-
+	//deletes values that appeared in both s1 and s2
+	for (int i = 0; i < s2.size(); i++) {
+		s2.get(i, temp);
+		if (tempSet.contains(temp))
+			tempSet.erase(temp);
 	}
+	result = tempSet; //assigns tempSet to result in case of aliasing
+}
