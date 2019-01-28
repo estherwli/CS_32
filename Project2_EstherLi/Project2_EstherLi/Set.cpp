@@ -159,7 +159,11 @@ bool Set::get(int pos, ItemType& value) const {
 void Set::swap(Set& other) {
 	if ((head == nullptr && other.head == nullptr) || this == &other)
 		return;
+<<<<<<< HEAD
+
+=======
 	
+>>>>>>> f27271cf6d2df92b25a9b83875bd0ef529a639d1
 	//swaps head
 	Node *tempHead = head;
 	head = other.head;
