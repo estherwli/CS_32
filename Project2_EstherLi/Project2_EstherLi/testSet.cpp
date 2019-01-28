@@ -6,7 +6,7 @@ using namespace std;
 void test()
 {
 	Set friends;
-	
+
 	assert(friends.size() == 0); //checks default constructor
 	assert(friends.insert("rachel")); //inserts a node
 	assert(friends.insert("monica")); //inserts a node
@@ -25,17 +25,20 @@ void test()
 	assert(friends.size() == 2); //checks size of set after deletions
 	assert(friends.get(1, x) && x == "rachel"); //checks get function after deletions
 	assert(friends.contains("monica") == false); //set should not contain something that was erased
-	
+
 	Set girls(friends); //checks copy constructor
 	assert(girls.size() == 2);
 	assert(girls.get(0, x) && x == "phoebe");
 	assert(girls.get(1, x) && x == "rachel");
 	assert(girls.insert("monica"));
-	
-	Set amigas = friends; //checks assignment operator
+
+	Set amigas;
+	amigas.insert("trash");
+	amigas = friends; //checks assignment operator
 	assert(amigas.size() == 2);
 	assert(amigas.get(0, x) && x == "phoebe");
 	assert(amigas.get(1, x) && x == "rachel");
+
 
 	Set boys; //checks swap function
 	boys.insert("ross");
@@ -87,7 +90,10 @@ void test()
 	assert(boys.get(1, x) && x == "phoebe");
 	assert(boys.get(2, x) && x == "rachel");
 
-
+	Set office; //tests insert and erase with a set containing only 1 node
+	assert(office.insert("jim"));
+	assert(office.erase("jim"));
+	assert(office.size() == 0);
 
 
 }
