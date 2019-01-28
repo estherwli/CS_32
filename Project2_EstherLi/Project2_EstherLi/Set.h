@@ -20,7 +20,7 @@ public:
 
 private:
 	//declaration for Node
-	class Node { 
+	class Node {
 	public:
 		ItemType data;
 		Node *next;
