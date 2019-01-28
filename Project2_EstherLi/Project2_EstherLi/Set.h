@@ -16,6 +16,7 @@ public:
 	bool contains(const ItemType& value) const;
 	bool get(int pos, ItemType& value) const;
 	void swap(Set& other);
+	void dump();
 
 private:
 	//declaration for Node

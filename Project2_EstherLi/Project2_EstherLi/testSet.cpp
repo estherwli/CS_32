@@ -32,10 +32,13 @@ void test()
 	assert(girls.get(1, x) && x == "rachel");
 	assert(girls.insert("monica"));
 	
-	Set amigas = friends; //checks assignment operator
+	Set amigas; 
+	amigas.insert("trash");
+	amigas = friends; //checks assignment operator
 	assert(amigas.size() == 2);
 	assert(amigas.get(0, x) && x == "phoebe");
 	assert(amigas.get(1, x) && x == "rachel");
+
 
 	Set boys; //checks swap function
 	boys.insert("ross");
@@ -87,7 +90,10 @@ void test()
 	assert(boys.get(1, x) && x == "phoebe");
 	assert(boys.get(2, x) && x == "rachel");
 
-
+	Set office; //tests insert and erase with a set containing only 1 node
+	assert(office.insert("jim"));
+	assert(office.erase("jim"));
+	assert(office.size() == 0);
 
 
 }
@@ -97,3 +103,4 @@ int main()
 	test();
 	cout << "Passed all tests" << endl;
 }
+
