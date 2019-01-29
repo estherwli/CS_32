@@ -17,35 +17,39 @@ Set::~Set() {
 		delete p;
 		p = n;
 	}
-	m_size = 0;
 }
 
 //copy constructor
 Set::Set(const Set& other) {
-	m_size = 0;
+	m_size = 0; //first construct an empty list
 	head = nullptr;
 	tail = nullptr;
-	if (other.head != nullptr) {
-		for (int i = 0; i < other.m_size; i++) {
-			ItemType temp;
-			other.get(i, temp);
-			insert(temp); //copies each node to new set and updates m_size
-		}
+	Node *p = other.head;
+	while (p != nullptr) {
+		insert(p->data); //copies each node to new set and updates m_size
+		p = p->next;
 	}
 }
 
 //assignment operator
 Set& Set::operator=(const Set& other) {
-	if (&other == this)
+	if (&other == this) //assigning the same set to itself
 		return *this;
-	Node *p;
-	while (head != nullptr) {
-		p = head->next;
-		delete head;
-		head = p;
+	Node *p = head;
+	while (p != nullptr) { //free memory in this set
+		Node *n = p->next;
+		delete p;
+		p = n;
 	}
-	Set temp(other);
-	swap(temp);
+	head = nullptr; //treat this set as empty
+	tail = nullptr;
+	m_size = 0;
+
+	Node *q = other.head;
+	while (q != nullptr) {
+		insert(q->data); //add nodes from other set to this set
+		q = q->next;
+	}
 	return *this;
 }
 
@@ -61,23 +65,19 @@ int Set::size() const {
 }
 
 bool Set::insert(const ItemType& value) {
-	Node* p = head;
-	while (p != nullptr) { //check if set already has value
-		if (p->data == value)
-			return false;
-		p = p->next;
-	}
+	if (contains(value)) //checks if set already has the value
+		return false;
 
 	//allocate new node
 	Node *latest = new Node;
 	latest->data = value;
+	m_size++; //increase the size of set
 
 	//case 1: empty set
 	if (head == nullptr) {
-		head = latest;
-		tail = latest;
-		head->last = nullptr;
-		head->next = nullptr;
+		latest->next = nullptr;
+		latest->last = nullptr;
+		head = tail = latest; //link head and tail nodes to the new node
 	}
 
 	//case 2: set has >= 1 nodes
@@ -85,9 +85,8 @@ bool Set::insert(const ItemType& value) {
 		tail->next = latest;
 		latest->last = tail;
 		latest->next = nullptr;
-		tail = latest; //update tail to point to new tail
+		tail = latest; //link tail node to new tail
 	}
-	m_size++; //increase the size of set
 	return true;
 }
 
@@ -97,9 +96,9 @@ bool Set::erase(const ItemType& value) {
 
 	//case 1: deleting top node
 	if (head->data == value) {
-		Node *killMe = head;
-		head = killMe->next;
-		delete killMe;
+		Node *killMe = head;  
+		head = killMe->next; //update current head to point to the second node
+		delete killMe; 
 		m_size--;
 		return true;
 	}
@@ -109,33 +108,30 @@ bool Set::erase(const ItemType& value) {
 	while (p != nullptr) {
 		if (p->next != nullptr && p->next->data == value) {
 			Node *killMe = p->next;
-			p->next = killMe->next;
+			p->next = killMe->next; 
 			delete killMe;
 			m_size--;
 			return true;
 		}
 		p = p->next;
 	}
-	return false; //set was traversed and value was not found
+	return false; //traversed entire set and no value could be deleted
 }
 
 bool Set::contains(const ItemType& value) const {
 	if (head == nullptr) //empty set
 		return false;
 	Node *p = head;
-	Node *q = tail;
-	while (p != nullptr && q != nullptr) { //traverse through entire set
-		if (p->data == value || q->data == value)
+	while (p != nullptr) { //traverse through entire set
+		if (p->data == value)
 			return true;
 		p = p->next;
-		q = q->last;
 	}
-	return false;
+	return false; //traversed entire set and value was not found
 }
 
 bool Set::get(int pos, ItemType& value) const {
-	//invalid conditions
-	if (head == nullptr || pos < 0 || pos >= m_size)
+	if (head == nullptr || pos < 0 || pos >= m_size) //invalid conditions
 		return false;
 
 	Node *p = head;
@@ -147,19 +143,19 @@ bool Set::get(int pos, ItemType& value) const {
 				count++; //records how many values p is strictly greater than
 			temp = temp->next;
 		}
-		if (count == pos) {
+		if (count == pos) { //we found the value in set
 			value = p->data;
 			return true;
 		}
 		p = p->next;
 	}
-	return false;
+	return false; //traversed through entire set and did not find value
 }
 
 void Set::swap(Set& other) {
 	if ((head == nullptr && other.head == nullptr) || this == &other)
 		return;
-	
+
 	//swaps head
 	Node *tempHead = head;
 	head = other.head;
@@ -180,7 +176,7 @@ void unite(const Set& s1, const Set& s2, Set& result) {
 	ItemType temp;
 	Set tempSet; //in case of aliasing
 
-	//adds all values from s1 to result
+	//assign all values from s1 to result
 	tempSet = s1;
 
 	//adds values from s2 that did not appear in s1 to result
@@ -196,7 +192,7 @@ void subtract(const Set& s1, const Set& s2, Set& result) {
 	ItemType temp;
 	Set tempSet;
 
-	//adds all values from s1 to result
+	//assign all values from s1 to result
 	tempSet = s1;
 
 	//deletes values that appeared in both s1 and s2
