@@ -1,6 +1,7 @@
 ﻿  eval.cpp
-c:\users\esther\desktop\cs_32\homework2p5_estherli\homework2p5_estherli\eval.cpp(11): warning C4018: '<': signed/unsigned mismatch
-c:\users\esther\desktop\cs_32\homework2p5_estherli\homework2p5_estherli\eval.cpp(15): warning C4018: '<': signed/unsigned mismatch
-c:\users\esther\desktop\cs_32\homework2p5_estherli\homework2p5_estherli\eval.cpp(42): warning C4715: 'evaluate': not all control paths return a value
-MSVCRTD.lib(exe_main.obj) : error LNK2019: unresolved external symbol _main referenced in function "int __cdecl invoke_main(void)" (?invoke_main@@YAHXZ)
-C:\Users\Esther\Desktop\CS_32\Homework2P5_EstherLi\Debug\Homework2P5_EstherLi.exe : fatal error LNK1120: 1 unresolved externals
+c:\users\esther\desktop\cs_32\homework2p5_estherli\homework2p5_estherli\eval.cpp(16): warning C4018: '<': signed/unsigned mismatch
+c:\users\esther\desktop\cs_32\homework2p5_estherli\homework2p5_estherli\eval.cpp(42): warning C4018: '<': signed/unsigned mismatch
+c:\users\esther\desktop\cs_32\homework2p5_estherli\homework2p5_estherli\eval.cpp(86): warning C4018: '<': signed/unsigned mismatch
+c:\users\esther\desktop\cs_32\homework2p5_estherli\homework2p5_estherli\eval.cpp(141): warning C4018: '<': signed/unsigned mismatch
+c:\users\esther\desktop\cs_32\homework2p5_estherli\homework2p5_estherli\eval.cpp(143): warning C4018: '<': signed/unsigned mismatch
+  Homework2P5_EstherLi.vcxproj -> C:\Users\Esther\Desktop\CS_32\Homework2P5_EstherLi\Debug\Homework2P5_EstherLi.exe

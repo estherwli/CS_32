@@ -1,6 +1,7 @@
 // Set.cpp
 
 #include "Set.h"
+using namespace std;
 
 Set::Set()
 	: m_size(0)
