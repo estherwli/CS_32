@@ -23,22 +23,22 @@ bool pathExists(string maze[], int nRows, int nCols, int sr, int sc, int er, int
 		coordQueue.pop();
 		if (current.r() == er && current.c() == ec)			//we reached the end point
 			return true;
-		if (maze[current.r() + 1][current.c()] == '.') {	//if south is not a wall and has not been encountered
-			Coord south(current.r() + 1, current.c());		//create new coordinate for south
-			coordQueue.push(south);							//add south coordinate to queue
-			maze[current.r() + 1][current.c()] = 'A';		//mark as encountered
+		if (current.r() < nRows - 1 && maze[current.r() + 1][current.c()] == '.') {	//if south is not a wall and has not been encountered
+			Coord south(current.r() + 1, current.c());	//create new coordinate for south
+			coordQueue.push(south);	//add south coordinate to queue
+			maze[current.r() + 1][current.c()] = 'A'; //mark as encountered
 		}
-		if (maze[current.r()][current.c() - 1] == '.') {
+		if (current.c() > 0 && maze[current.r()][current.c() - 1] == '.') {
 			Coord west(current.r(), current.c() - 1);
 			coordQueue.push(west);
 			maze[current.r()][current.c() - 1] = 'A';
 		}
-		if (maze[current.r() - 1][current.c()] == '.') {
+		if (current.r() > 0 && maze[current.r() - 1][current.c()] == '.') {
 			Coord north(current.r() - 1, current.c());
 			coordQueue.push(north);
 			maze[current.r() - 1][current.c()] = 'A';
 		}
-		if (maze[current.r()][current.c() + 1] == '.') {
+		if (current.c() < nCols - 1 && maze[current.r()][current.c() + 1] == '.') {
 			Coord east(current.r(), current.c() + 1);
 			coordQueue.push(east);
 			maze[current.r()][current.c() + 1] = 'A';
@@ -46,6 +46,32 @@ bool pathExists(string maze[], int nRows, int nCols, int sr, int sc, int er, int
 
 	}
 	return false;	//never reached end point 
+}
+
+int main()
+{
+	string maze[10] = {
+		"XXXXXXXXXX",
+		"X....X...X",
+		"X.XX.XX..X",
+		"XXX....X.X",
+		"X.XXX.XXXX",
+		"X.X...X..X",
+		"X...X.X..X",
+		"XXXXX.X.XX",
+		"X........X",
+		"XXXXXXXXXX"
+	};
+
+	if (pathExists(maze, 10, 10, 1, 1, 8, 8))
+		cout << "Solvable!" << endl;
+	else
+		cout << "Out of luck!" << endl;
+
+	if (pathExists(maze, 10, 10, 1, 1, 1, 8))
+		cout << "Solvable!" << endl;
+	else
+		cout << "Out of luck!" << endl;
 }
 
 
