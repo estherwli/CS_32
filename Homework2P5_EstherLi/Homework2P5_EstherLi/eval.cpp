@@ -11,20 +11,30 @@ using namespace std;
 
 string infixToPostfix(string infix);
 bool precedence(char me, char other);
+bool checkOperators(string infix);
+bool checkParentheses(string infix);
+void removeSpace(string& infix);
 
 int evaluate(string infix, const Set& trueValues, const Set& falseValues, string& postfix, bool& result) {
+
+	removeSpace(infix);
+
+	infix += ' ';
+
 	for (int i = 0; i < infix.size() - 1; i++) {
 		if (isalpha(infix[i])) {
 			if (isupper(infix[i]) || isalpha(infix[i + 1]))
 				return 1;
-			if (trueValues.contains(infix[i]) && falseValues.contains(infix[i]))
-				return 2;
 			if (!trueValues.contains(infix[i]) && !falseValues.contains(infix[i]))
+				return 2;
+			if (trueValues.contains(infix[i]) && falseValues.contains(infix[i]))
 				return 3;
-		}			
-		else if (infix[i] != '&' && infix[i] != '|' && infix[i] != '!' && infix[i] != ' ')
+		}
+		else if (infix[i] != '(' && infix[i] != ')' && infix[i] != '&' && infix[i] != '|' && infix[i] != '!')
 			return 1;
 	}
+	if (!checkOperators(infix) || !checkParentheses(infix))
+		return 1;
 
 	postfix = infixToPostfix(infix);
 
@@ -78,7 +88,7 @@ int evaluate(string infix, const Set& trueValues, const Set& falseValues, string
 
 
 string infixToPostfix(string infix) {
-	string postfix;
+	string postfix = "";
 	stack<char> operators;
 	for (int i = 0; i < infix.size(); i++) {
 		char ch = infix[i];
@@ -96,12 +106,9 @@ string infixToPostfix(string infix) {
 		case '&':
 		case '|':
 		case '!':
-			while (!operators.empty() && operators.top() != '(') {
-				if (operators.top() == '&' || operators.top() == '|' || operators.top() == '!')
-					if (precedence(operators.top(), ch)) {
-						postfix += operators.top();
-						operators.pop();
-					}
+			while (!operators.empty() && operators.top() != '(' && precedence(operators.top(), ch)) {
+				postfix += operators.top();
+				operators.pop();
 			}
 			operators.push(ch);
 			break;
@@ -121,12 +128,61 @@ string infixToPostfix(string infix) {
 bool precedence(char me, char other) {
 	if (me == '!')
 		return true;
-	if ((me == '&' && other == '|') || (me == '&' && other == '&'))
+	else if (me == '&' && other != '!')
 		return true;
-	if (me == '|' && other == '|')
+	else if (me == '|' && other == '|')
 		return true;
 	else
 		return false;
+}
+
+bool checkOperators(string infix) {
+	if (!(isalpha(infix[0]) || infix[0] == '!' || infix[0] == '('))
+		return false;
+	for (int i = 1; i < infix.size(); i++) {
+		if (infix[i] == '|' || infix[i] == '&')
+			if (!(isalpha(infix[i - 1]) || infix[i - 1] == ')'))
+				return false;
+	}
+	int n = infix.size() - 2;
+	if (isalpha(infix[n]) || infix[n] == ')')
+		return true;
+	else
+		return false;
+}
+
+
+bool checkParentheses(string infix) {
+	int count = 0;
+	int operand = 0;
+	for (int i = 0; i < infix.size(); i++) {
+		if (infix[i] == '(') {
+			if (i != 0 && !(infix[i - 1] == '(' || infix[i - 1] == '!' || infix[i - 1] == '&' || infix[i - 1] == '|'))
+				return false;
+			count++;
+			operand = 0;
+		}
+		if (infix[i] == ')') {
+			if (count <= 0 || operand == 0)
+				return false;
+			else
+				count--;
+		}
+		if (count != 0 && isalpha(infix[i]))
+			operand++;
+	}
+	if (count != 0)
+		return false;
+	else
+		return true;
+}
+
+void removeSpace(string& infix) {
+	string noSpace;
+	for (int i = 0; i < infix.size(); i++)
+		if (infix[i] != ' ')
+			noSpace += infix[i];
+	infix = noSpace;
 }
 
 int main()
@@ -142,8 +198,27 @@ int main()
 
 	string pf;
 	bool answer;
-	assert(evaluate("w| f", trues, falses, pf, answer) == 0 && pf == "wf|" &&  answer);
+
 	assert(evaluate("y|", trues, falses, pf, answer) == 1);
-	
+	assert(evaluate("n t", trues, falses, pf, answer) == 1);
+	assert(evaluate("nt", trues, falses, pf, answer) == 1);
+	assert(evaluate("()", trues, falses, pf, answer) == 1);
+	assert(evaluate("y(n|y)", trues, falses, pf, answer) == 1);
+	assert(evaluate("t(&n)", trues, falses, pf, answer) == 1);
+	assert(evaluate("(n&(t|7)", trues, falses, pf, answer) == 1);
+	assert(evaluate("", trues, falses, pf, answer) == 1);
+	assert(evaluate("f  |  !f & (t&n) ", trues, falses, pf, answer) == 0
+		&& pf == "ff!tn&&|" && !answer);
+	assert(evaluate(" x  ", trues, falses, pf, answer) == 0 && pf == "x" && !answer);
+	trues.insert('x');
+	assert(evaluate("((x))", trues, falses, pf, answer) == 3);
+	falses.erase('x');
+	assert(evaluate("((x))", trues, falses, pf, answer) == 0 && pf == "x"  &&  answer);
+	trues.erase('w');
+	assert(evaluate("w| f", trues, falses, pf, answer) == 2);
+	falses.insert('w');
+	assert(evaluate("w| f", trues, falses, pf, answer) == 0 && pf == "wf|" && !answer);
+
 	cout << "Passed all tests" << endl;
+
 }
