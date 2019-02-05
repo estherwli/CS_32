@@ -1,10 +1,8 @@
 ﻿  eval.cpp
 c:\users\esther\desktop\cs_32\homework2p5_estherli\homework2p5_estherli\eval.cpp(24): warning C4018: '<': signed/unsigned mismatch
-c:\users\esther\desktop\cs_32\homework2p5_estherli\homework2p5_estherli\eval.cpp(49): warning C4018: '<': signed/unsigned mismatch
-c:\users\esther\desktop\cs_32\homework2p5_estherli\homework2p5_estherli\eval.cpp(93): warning C4018: '<': signed/unsigned mismatch
-c:\users\esther\desktop\cs_32\homework2p5_estherli\homework2p5_estherli\eval.cpp(142): warning C4018: '<': signed/unsigned mismatch
-c:\users\esther\desktop\cs_32\homework2p5_estherli\homework2p5_estherli\eval.cpp(158): warning C4018: '<': signed/unsigned mismatch
-c:\users\esther\desktop\cs_32\homework2p5_estherli\homework2p5_estherli\eval.cpp(182): warning C4018: '<': signed/unsigned mismatch
-c:\users\esther\desktop\cs_32\homework2p5_estherli\homework2p5_estherli\eval.cpp(194): warning C4018: '<': signed/unsigned mismatch
-c:\users\esther\desktop\cs_32\homework2p5_estherli\homework2p5_estherli\eval.cpp(196): warning C4018: '<': signed/unsigned mismatch
+c:\users\esther\desktop\cs_32\homework2p5_estherli\homework2p5_estherli\eval.cpp(64): warning C4018: '<': signed/unsigned mismatch
+c:\users\esther\desktop\cs_32\homework2p5_estherli\homework2p5_estherli\eval.cpp(108): warning C4018: '<': signed/unsigned mismatch
+c:\users\esther\desktop\cs_32\homework2p5_estherli\homework2p5_estherli\eval.cpp(157): warning C4018: '<': signed/unsigned mismatch
+c:\users\esther\desktop\cs_32\homework2p5_estherli\homework2p5_estherli\eval.cpp(200): warning C4018: '<': signed/unsigned mismatch
+c:\users\esther\desktop\cs_32\homework2p5_estherli\homework2p5_estherli\eval.cpp(224): warning C4018: '<': signed/unsigned mismatch
   Homework2P5_EstherLi.vcxproj -> C:\Users\Esther\Desktop\CS_32\Homework2P5_EstherLi\Debug\Homework2P5_EstherLi.exe
