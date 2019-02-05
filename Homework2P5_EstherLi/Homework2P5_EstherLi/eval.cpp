@@ -1,5 +1,3 @@
-class Set;
-
 #include "Set.h"  // with ItemType being a type alias for char
 #include <iostream>
 #include <string>
@@ -17,11 +15,11 @@ void removeSpace(string& infix);
 
 int evaluate(string infix, const Set& trueValues, const Set& falseValues, string& postfix, bool& result) {
 
-	removeSpace(infix); 
+	removeSpace(infix);
 
 	infix += ' '; //appends a white space to prevent index out of bounds in loops below
 
-	for (int i = 0; i < infix.size() - 1; i++) { 
+	for (int i = 0; i < infix.size() - 1; i++) {
 		if (isalpha(infix[i])) {
 			if (isupper(infix[i]) || isalpha(infix[i + 1])) //a letter is uppercase or followed by another letter
 				return 1;
@@ -31,7 +29,7 @@ int evaluate(string infix, const Set& trueValues, const Set& falseValues, string
 				return 3;
 		}
 		else if (infix[i] != '(' && infix[i] != ')' && infix[i] != '&' && infix[i] != '|' && infix[i] != '!') //if other symbols are used
-			return 1; 
+			return 1;
 	}
 	if (!checkOperators(infix) || !checkParentheses(infix)) //check valid operator syntax and parentheses syntax
 		return 1;
@@ -57,48 +55,48 @@ int evaluate(string infix, const Set& trueValues, const Set& falseValues, string
 		}
 	}
 
-char operand1;
-char operand2;
-stack<char> operand;
+	char operand1;
+	char operand2;
+	stack<char> operand;
 
-for (int i = 0; i < postfix.size(); i++) {
-	char ch = postfix[i];
-	if (isalpha(ch))
-		operand.push(ch);
-	else if (ch == '!') {
-		char temp = operand.top();
-		operand.pop();
-		if (trueValues.contains(temp))
-			operand.push(no);
-		else if (falseValues.contains(temp))
-			operand.push(yes);
-	}
-	else {
-		operand2 = operand.top();
-		operand.pop();
-		operand1 = operand.top();
-		operand.pop();
-		switch (ch) {
-		case '&':
-			if (trueValues.contains(operand1) && trueValues.contains(operand2))
-				operand.push(yes);
-			else
+	for (int i = 0; i < postfix.size(); i++) {
+		char ch = postfix[i];
+		if (isalpha(ch))
+			operand.push(ch);
+		else if (ch == '!') {
+			char temp = operand.top();
+			operand.pop();
+			if (trueValues.contains(temp))
 				operand.push(no);
-			break;
-		case '|':
-			if (trueValues.contains(operand1) || trueValues.contains(operand2))
+			else if (falseValues.contains(temp))
 				operand.push(yes);
-			else
-				operand.push(no);
-			break;
+		}
+		else {
+			operand2 = operand.top();
+			operand.pop();
+			operand1 = operand.top();
+			operand.pop();
+			switch (ch) {
+			case '&':
+				if (trueValues.contains(operand1) && trueValues.contains(operand2))
+					operand.push(yes);
+				else
+					operand.push(no);
+				break;
+			case '|':
+				if (trueValues.contains(operand1) || trueValues.contains(operand2))
+					operand.push(yes);
+				else
+					operand.push(no);
+				break;
+			}
 		}
 	}
-}
-if (trueValues.contains(operand.top()))
-result = true;
-else
-result = false;
-return 0;
+	if (trueValues.contains(operand.top()))
+		result = true;
+	else
+		result = false;
+	return 0;
 }
 
 
@@ -141,7 +139,7 @@ string infixToPostfix(string infix) {
 }
 
 bool precedence(char me, char other) { //returns true if me has higher or equal precedence than other
-	if (me == '!') 
+	if (me == '!')
 		return true;
 	else if (me == '&' && other != '!')
 		return true;
@@ -152,6 +150,8 @@ bool precedence(char me, char other) { //returns true if me has higher or equal 
 }
 
 bool checkOperators(string infix) { //returns true if all operators are followed by valid characters
+	if (infix.size() == 0)
+		return false;
 	if (!(isalpha(infix[0]) || infix[0] == '!' || infix[0] == '('))
 		return false;
 	for (int i = 0; i < infix.size() - 1; i++) {
@@ -237,6 +237,37 @@ int main()
 	f.insert('x');
 	string pf;
 	bool answer;
+
+	string trueChars = "tywz";
+	string falseChars = "fnx";
+	Set trues;
+	Set falses;
+	for (int k = 0; k < trueChars.size(); k++)
+		trues.insert(trueChars[k]);
+	for (int k = 0; k < falseChars.size(); k++)
+		falses.insert(falseChars[k]);
+
+	assert(evaluate("w| f", trues, falses, pf, answer) == 0 && pf == "wf|" &&  answer);
+	assert(evaluate("y|", trues, falses, pf, answer) == 1);
+	assert(evaluate("n t", trues, falses, pf, answer) == 1);
+	assert(evaluate("nt", trues, falses, pf, answer) == 1);
+	assert(evaluate("()", trues, falses, pf, answer) == 1);
+	assert(evaluate("y(n|y)", trues, falses, pf, answer) == 1);
+	assert(evaluate("t(&n)", trues, falses, pf, answer) == 1);
+	assert(evaluate("(n&(t|7)", trues, falses, pf, answer) == 1);
+	assert(evaluate("", trues, falses, pf, answer) == 1);
+	assert(evaluate("f  |  !f & (t&n) ", trues, falses, pf, answer) == 0
+		&& pf == "ff!tn&&|" && !answer);
+	assert(evaluate(" x  ", trues, falses, pf, answer) == 0 && pf == "x" && !answer);
+	trues.insert('x');
+	assert(evaluate("((x))", trues, falses, pf, answer) == 3);
+	falses.erase('x');
+	assert(evaluate("((x))", trues, falses, pf, answer) == 0 && pf == "x"  &&  answer);
+	trues.erase('w');
+	assert(evaluate("w| f", trues, falses, pf, answer) == 2);
+	falses.insert('w');
+	assert(evaluate("w| f", trues, falses, pf, answer) == 0 && pf == "wf|" && !answer);
+	
 	assert(evaluate("x|t", t, f, pf, answer) == 3);
 	assert(evaluate("b|t", t, f, pf, answer) == 2);
 	assert(evaluate("t|t|t", t, f, pf, answer) == 0 && answer);
