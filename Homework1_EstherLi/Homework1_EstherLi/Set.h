@@ -1,7 +1,7 @@
 #ifndef SET_INCLUDED
 #define SET_INCLUDED
 #include <string>
-using ItemType = unsigned long;
+using ItemType = int;
 
 const int DEFAULT_MAX_ITEMS = 250;
 

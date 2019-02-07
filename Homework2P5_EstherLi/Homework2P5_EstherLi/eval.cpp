@@ -36,67 +36,47 @@ int evaluate(string infix, const Set& trueValues, const Set& falseValues, string
 
 	postfix = infixToPostfix(infix); //convert infix to postfix
 
-	char yes; //represents a char with true value 
-	char no; //represents a char with false value
-	for (int i = 0; i < trueValues.size(); i++) {
-		char temp;
-		trueValues.get(i, temp);
-		if (!falseValues.contains(temp)) { //ensure the yes variable does not appear in both sets
-			yes = temp;
-			break;
-		}
-	}
-	for (int i = 0; i < falseValues.size(); i++) {
-		char temp;
-		falseValues.get(i, temp);
-		if (!trueValues.contains(temp)) { //ensure the no variable does not appear in both sets
-			no = temp;
-			break;
-		}
-	}
-
-	char operand1;
+	char operand1; 
 	char operand2;
-	stack<char> operand;
+	stack<bool> operand; //holds all operands' bool values
 
 	for (int i = 0; i < postfix.size(); i++) {
 		char ch = postfix[i];
-		if (isalpha(ch))
-			operand.push(ch);
+		if (isalpha(ch) && trueValues.contains(ch))
+			operand.push(true); //store's corresponding bool
+		else if (isalpha(ch) && falseValues.contains(ch))
+			operand.push(false); //store's char's corresponding bool
 		else if (ch == '!') {
 			char temp = operand.top();
 			operand.pop();
-			if (trueValues.contains(temp))
-				operand.push(no);
-			else if (falseValues.contains(temp))
-				operand.push(yes);
+			operand.push(!temp); //pushes opposite value to stack
 		}
 		else {
-			operand2 = operand.top();
+			operand2 = operand.top(); //compares second-to-top and top operands
 			operand.pop();
 			operand1 = operand.top();
 			operand.pop();
 			switch (ch) {
 			case '&':
-				if (trueValues.contains(operand1) && trueValues.contains(operand2))
-					operand.push(yes);
+				if (operand1 && operand2) 
+					operand.push(true);
 				else
-					operand.push(no);
+					operand.push(false);
 				break;
 			case '|':
-				if (trueValues.contains(operand1) || trueValues.contains(operand2))
-					operand.push(yes);
+				if (operand1 || operand2)
+					operand.push(true);
 				else
-					operand.push(no);
+					operand.push(false);
 				break;
 			}
 		}
 	}
-	if (trueValues.contains(operand.top()))
+	if (!operand.empty() && operand.top()) 
 		result = true;
 	else
 		result = false;
-	return 0;
+	return 0; //successfully evaluated expression
 }
 
 
@@ -119,7 +99,7 @@ string infixToPostfix(string infix) {
 		case '&':
 		case '|':
 		case '!':
-			while (!operators.empty() && operators.top() != '(' && precedence(operators.top(), ch)) {
+			while (!operators.empty() && operators.top() != '(' && precedence(operators.top(), ch)) { //checks operator precedence
 				postfix += operators.top();
 				operators.pop();
 			}
@@ -128,11 +108,11 @@ string infixToPostfix(string infix) {
 		case ' ':
 			break;
 		default:
-			postfix += ch;
+			postfix += ch; //append chars that are just letters
 		}
 	}
 	while (!operators.empty()) {
-		postfix += operators.top();
+		postfix += operators.top(); //append operators after letters 
 		operators.pop();
 	}
 	return postfix;
@@ -227,26 +207,122 @@ void removeSpace(string& infix) { //updates infix so it has no white space
 	infix = noSpace;
 }
 
-int main()
+void test1()
 {
-	Set t;
-	Set f;
-	t.insert('t');
-	t.insert('x');
-	f.insert('f');
-	f.insert('x');
-	string pf;
-	bool answer;
-
 	string trueChars = "tywz";
 	string falseChars = "fnx";
 	Set trues;
 	Set falses;
-	for (int k = 0; k < trueChars.size(); k++)
+	for (unsigned k = 0; k < trueChars.size(); k++)
 		trues.insert(trueChars[k]);
-	for (int k = 0; k < falseChars.size(); k++)
+	for (unsigned k = 0; k < falseChars.size(); k++)
 		falses.insert(falseChars[k]);
 
+	string pf;
+	bool answer;
+
+	//additional tests
+	assert(evaluate("(w| f", trues, falses, pf, answer) == 1);
+	assert(evaluate("(w| f)", trues, falses, pf, answer) == 0 && answer);
+	assert(evaluate("(w| f)", trues, falses, pf, answer) == 0 && answer);
+	assert(evaluate("(((w| f)))", trues, falses, pf, answer) == 0 && answer);
+	assert(evaluate("((w)| (f))", trues, falses, pf, answer) == 0 && answer);
+	assert(evaluate("((w)| (f)))", trues, falses, pf, answer) == 1 && answer);
+	assert(evaluate("(W | f )", trues, falses, pf, answer) == 1 && answer); // upper case letter
+	assert(evaluate("(0 | f )", trues, falses, pf, answer) == 1 && answer); // digit number
+	cout << "Passed all tests in test1()" << endl;
+}
+
+void test2()  //Test cases
+{
+	string pf;
+	bool answer;
+	string trueChars = "t";
+	string falseChars = "f";
+
+	Set trues;
+	Set falses;
+	for (unsigned k = 0; k < trueChars.size(); k++)
+		trues.insert(trueChars[k]);
+	for (unsigned k = 0; k < falseChars.size(); k++)
+		falses.insert(falseChars[k]);
+
+	assert(evaluate("t| f", trues, falses, pf, answer) == 0 && pf == "tf|" && answer);
+	assert(evaluate("t|", trues, falses, pf, answer) == 1);
+	assert(evaluate("f f", trues, falses, pf, answer) == 1);
+	assert(evaluate("tf", trues, falses, pf, answer) == 1);
+	assert(evaluate("()", trues, falses, pf, answer) == 1);
+	assert(evaluate("t(f|t)", trues, falses, pf, answer) == 1);
+	assert(evaluate("t(&t)", trues, falses, pf, answer) == 1);
+	assert(evaluate("(t&(f|f)", trues, falses, pf, answer) == 1);
+	assert(evaluate("", trues, falses, pf, answer) == 1);
+	assert(evaluate("f  |  !f & (t&f) ", trues, falses, pf, answer) == 0
+		&& pf == "ff!tf&&|" && !answer);
+	assert(evaluate(" f  ", trues, falses, pf, answer) == 0 && pf == "f" && !answer);
+	assert(evaluate("((t))", trues, falses, pf, answer) == 0 && pf == "t"  &&  answer);
+	assert(evaluate("t", trues, falses, pf, answer) == 0 && answer);
+	assert(evaluate("(f)", trues, falses, pf, answer) == 0 && !answer);
+	assert(evaluate("t&(f)", trues, falses, pf, answer) == 0 && !answer);
+	assert(evaluate("t & !f", trues, falses, pf, answer) == 0 && answer);
+	assert(evaluate("!(f|t)", trues, falses, pf, answer) == 0 && !answer);
+	assert(evaluate("!f|t", trues, falses, pf, answer) == 0 && answer);
+	assert(evaluate("t|f&f", trues, falses, pf, answer) == 0 && answer);
+	assert(evaluate("t&!(f|t&t|f)|!!!(f&t&f)", trues, falses, pf, answer) == 0 && answer);
+	assert(evaluate("f!", trues, falses, pf, answer) == 1);
+	assert(evaluate("!f", trues, falses, pf, answer) == 0 && answer);
+	assert(evaluate("dsvfwerg", trues, falses, pf, answer) == 1 && answer);
+	cout << "Passed all tests in test2()" << endl;
+}
+
+void test3()
+{
+	string pf;
+	bool answer;
+	string trueChars = "abc";
+	string falseChars = "defhijk";
+
+	Set trues;
+	Set falses;
+	for (unsigned k = 0; k < trueChars.size(); k++)
+		trues.insert(trueChars[k]);
+	for (unsigned k = 0; k < falseChars.size(); k++)
+		falses.insert(falseChars[k]);
+
+	assert(evaluate("c", trues, falses, pf, answer) == 0 && pf == "c" && answer == true);
+	assert(evaluate("c| d", trues, falses, pf, answer) == 0 && pf == "cd|"  &&  answer);
+	assert(evaluate("(d)", trues, falses, pf, answer) == 0 && pf == "d" && !answer);
+	assert(evaluate("c&(d)", trues, falses, pf, answer) == 0 && pf == "cd&" && !answer);
+	assert(evaluate("a & !k", trues, falses, pf, answer) == 0 && pf == "ak!&" && answer);
+	assert(evaluate("!(i|j)", trues, falses, pf, answer) == 0 && pf == "ij|!" && answer);
+	assert(evaluate("!i|j", trues, falses, pf, answer) == 0 && pf == "i!j|" && answer);
+	assert(evaluate("h|e&f", trues, falses, pf, answer) == 0 && pf == "hef&|" && !answer);
+	assert(evaluate("b&!(k|b&b|k) | !!!(k&b&k)", trues, falses, pf, answer) == 0 && pf == "bkbb&|k|!&!!kb&k&!|" && answer);
+	assert(evaluate("j|", trues, falses, pf, answer) == 1);
+	assert(evaluate("e f", trues, falses, pf, answer) == 1);
+	assert(evaluate("ab", trues, falses, pf, answer) == 1);
+	assert(evaluate("()", trues, falses, pf, answer) == 1);
+	assert(evaluate("c(k|j)", trues, falses, pf, answer) == 1);
+	assert(evaluate("c(&j)", trues, falses, pf, answer) == 1);
+	assert(evaluate("(h&(i|i)", trues, falses, pf, answer) == 1);
+	assert(evaluate("", trues, falses, pf, answer) == 1);
+	assert(evaluate("e  |  !d & (a&d) ", trues, falses, pf, answer) == 0 && pf == "ed!ad&&|" && !answer);
+	assert(evaluate(" k  ", trues, falses, pf, answer) == 0 && pf == "k" && !answer);
+	cout << "Passed all tests in test3()" << endl;
+}
+
+void test_spec()
+{
+	string trueChars = "tywz";
+	string falseChars = "fnx";
+	Set trues;
+	Set falses;
+	for (unsigned k = 0; k < trueChars.size(); k++)
+		trues.insert(trueChars[k]);
+	for (unsigned k = 0; k < falseChars.size(); k++)
+		falses.insert(falseChars[k]);
+
+	string pf;
+	bool answer;
 	assert(evaluate("w| f", trues, falses, pf, answer) == 0 && pf == "wf|" &&  answer);
 	assert(evaluate("y|", trues, falses, pf, answer) == 1);
 	assert(evaluate("n t", trues, falses, pf, answer) == 1);
@@ -267,53 +343,15 @@ int main()
 	assert(evaluate("w| f", trues, falses, pf, answer) == 2);
 	falses.insert('w');
 	assert(evaluate("w| f", trues, falses, pf, answer) == 0 && pf == "wf|" && !answer);
-	
-	assert(evaluate("x|t", t, f, pf, answer) == 3);
-	assert(evaluate("b|t", t, f, pf, answer) == 2);
-	assert(evaluate("t|t|t", t, f, pf, answer) == 0 && answer);
-	assert(evaluate("!f&!f&!f", t, f, pf, answer) == 0 && answer);
-	assert(evaluate("|", t, f, pf, answer) == 1);
-	assert(evaluate("&", t, f, pf, answer) == 1);
-	assert(evaluate("!", t, f, pf, answer) == 1);
-	assert(evaluate("t!", t, f, pf, answer) == 1);
-	assert(evaluate("t&", t, f, pf, answer) == 1);
-	assert(evaluate("t|", t, f, pf, answer) == 1);
-	assert(evaluate("|&", t, f, pf, answer) == 1);
-	assert(evaluate("|!", t, f, pf, answer) == 1);
-	assert(evaluate("||", t, f, pf, answer) == 1);
-	assert(evaluate("&&", t, f, pf, answer) == 1);
-	assert(evaluate("&!", t, f, pf, answer) == 1);
-	assert(evaluate("&|", t, f, pf, answer) == 1);
-	assert(evaluate("!!", t, f, pf, answer) == 1);
-	assert(evaluate("!|", t, f, pf, answer) == 1);
-	assert(evaluate("!&", t, f, pf, answer) == 1);
-	assert(evaluate("", t, f, pf, answer) == 1);
-	assert(evaluate("t", t, f, pf, answer) == 0 && answer);
-	assert(evaluate("|!", t, f, pf, answer) == 1);
-	assert(evaluate("||", t, f, pf, answer) == 1);
-	assert(evaluate("&&", t, f, pf, answer) == 1);
-	assert(evaluate("t|", t, f, pf, answer) == 1);
-	assert(evaluate("f f", t, f, pf, answer) == 1);
-	assert(evaluate("tf", t, f, pf, answer) == 1);
-	assert(evaluate("()", t, f, pf, answer) == 1);
-	assert(evaluate("t(f|t)", t, f, pf, answer) == 1);
-	assert(evaluate("t(&t)", t, f, pf, answer) == 1);
-	assert(evaluate("(t&(f|f)", t, f, pf, answer) == 1);
-	assert(evaluate("", t, f, pf, answer) == 1);
-	assert(evaluate("f  |  !f & (t&f) ", t, f, pf, answer) == 0
-		&& pf == "ff!tf&&|" && !answer);
-	assert(evaluate(" f  ", t, f, pf, answer) == 0 && pf == "f" && !answer);
-	assert(evaluate("((t))", t, f, pf, answer) == 0 && pf == "t"  &&  answer);
-	assert(evaluate("t", t, f, pf, answer) == 0 && answer);
-	assert(evaluate("(f)", t, f, pf, answer) == 0 && !answer);
-	assert(evaluate("t&(f)", t, f, pf, answer) == 0 && !answer);
-	assert(evaluate("t & !f", t, f, pf, answer) == 0 && answer);
-	assert(evaluate("!(f|t)", t, f, pf, answer) == 0 && !answer);
-	assert(evaluate("!f|t", t, f, pf, answer) == 0 && answer);
-	assert(evaluate("t|f&f", t, f, pf, answer) == 0 && answer);
-	assert(evaluate("t&!(f|t&t|f)|!!!(f&t&f)", t, f, pf, answer) == 0 && answer);
-	assert(evaluate("f!", t, f, pf, answer) == 1);
-	assert(evaluate("!f", t, f, pf, answer) == 0 && answer);
-	assert(evaluate("dsvfwerg", t, f, pf, answer) == 1 && answer);
-	cout << "Passed all tests" << endl;
+
+	cout << "Passed all tests in test_spec()" << endl;
 }
+
+int main()
+{
+	test1();
+	test2();
+	test3();
+	test_spec();
+}
+

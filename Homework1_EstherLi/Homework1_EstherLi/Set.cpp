@@ -35,12 +35,10 @@ bool Set::erase(const ItemType& value) {
 		{
 			for (int j = i; j < size() - 1; j++)
 				m_items[j] = m_items[j + 1];
+			m_size--;
 		}
-		else
-			return false;
 	}
-	m_size--;
-	return true;
+	return false;
 }
 
 bool Set::contains(const ItemType& value) const {
