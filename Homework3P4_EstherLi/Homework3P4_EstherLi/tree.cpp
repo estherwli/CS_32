@@ -95,5 +95,39 @@ void divide(double a[], int n, double divider,
 // If n <= 1, do nothing.
 void order(double a[], int n)
 {
-	return;  // This is not always correct.
+	if (n <= 1)
+		return;
+	int firstNotGreater, firstLess;
+	divide(a, n, a[n/2], firstNotGreater, firstLess);
+	order(a, firstNotGreater);
+	order(a + firstLess, n - firstLess);
+}
+
+
+int main() {
+	double a1[] = { 2, 3, 4, 5, 6, 7, -1 };
+	double a2[] = { 2, 2, 2, 3 };
+	double a3[] = { 0, 0, 0 }; 
+	double a4[] = { 6, 2, 6, 3, 2, 1, 4, 5};
+
+	order(a1, 7);
+	for (int i = 0; i < 7; i++)
+		cout << a1[i] << " ";
+	cout << endl;
+
+	order(a2, 4);
+	for (int i = 0; i < 4; i++)
+		cout << a2[i] << " ";
+	cout << endl;
+
+	order(a3, 3);
+	for (int i = 0; i < 3; i++)
+		cout << a3[i] << " ";
+	cout << endl;
+
+	order(a4, 8);
+	for (int i = 0; i < 8; i++)
+		cout << a4[i] << " ";
+	cout << endl;
+
 }
