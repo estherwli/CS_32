@@ -1,4 +1,5 @@
 #include <iostream>
+#include<cassert>
 using namespace std;
 
 // Return the number of ways that all n2 elements of a2 appear
@@ -14,16 +15,10 @@ using namespace std;
 	  //	50 40 30					3
 int countIncludes(const double a1[], int n1, const double a2[], int n2)
 {
-	if ((n1 < 0 || n2 < 0) || (n2 > n1)) //invalid parameters: negative size or n2 > n1
-		return 0;
-	if (n2 == 0) //an empty sequence appears in 1 way in a1
+	if (n2 <= 0) //treat negative values as 0; an empty sequence appears in 1 way in a1
 		return 1;
-	if (n2 == 1) {
-		if (a1[0] == a2[0])
-			return 1;
-		else
-			return 0;
-	}
+	if (n1 < n2) //impossible for a1 to contain a2 if n1 < n2 
+		return 0;
 	if (a1[0] == a2[0]) //found first matching value; now checks that the rest of a2 is in a1 & finds all other ways a2 appears in a1
 		return countIncludes(a1 + 1, n1 - 1, a2 + 1, n2 - 1) + countIncludes(a1 + 1, n1 - 1, a2, n2);
 	else
@@ -103,8 +98,27 @@ void order(double a[], int n)
 	order(a + firstLess, n - firstLess);
 }
 
+void test1() {
+	double a1[] = { 1, 2, 3, 4, 5 };
+	double a2[] = { 1.0, 2.0, 3.0, 4.0, 5.0 };
+	double a3[] = { 2.0, 4.0 };
+	double a4[] = { 2, 4, 4, 2, 4};
+	double a5[] = { 3, 3, 3 };
+	double a6[] = { 3 };
+	assert(countIncludes(a1, 5, a2, 5) == 1);
+	assert(countIncludes(a1, 5, a2, 4) == 1);
+	assert(countIncludes(a1, 0, a2, 0) == 1);
+	assert(countIncludes(a1, -1, a2, -2) == 1);
+	assert(countIncludes(a1, -2, a2, -1) == 1);
+	assert(countIncludes(a1, 0, a2, 5) == 0);
+	assert(countIncludes(a1, 4, a2, 5) == 0);
+	assert(countIncludes(a1, 5, a3, 2) == 1);
+	assert(countIncludes(a4, 5, a3, 2) == 4);
+	assert(countIncludes(a5, 3, a6, 1) == 3);
+	assert(countIncludes(a1, 5, a5, 3) == 0);
+}
 
-int main() {
+void test2() {
 	double a1[] = { 2, 3, 4, 5, 6, 7, -1 };
 	double a2[] = { 2, 2, 2, 3 };
 	double a3[] = { 0, 0, 0 }; 
@@ -130,4 +144,10 @@ int main() {
 		cout << a4[i] << " ";
 	cout << endl;
 
+}
+
+int main() {
+	test1();
+	test2();
+	cout << "Passed all tests.";
 }

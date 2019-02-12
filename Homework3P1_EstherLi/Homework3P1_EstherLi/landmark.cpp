@@ -4,16 +4,17 @@ using namespace std;
 
 class Landmark {
 public:
+	Landmark(string name) //compilation error if Landmark object is created bc icon is pure virtual
+		:m_name(name) {} 
 	virtual ~Landmark() {}
 	string name() const {
 		return m_name;
 	}
-	virtual string color() const {
+	virtual string color() const { //non-pure virtual
 		return "yellow";
 	}
-	virtual string icon() const = 0;
-protected:
-	Landmark(string name) :m_name(name) {}
+	virtual string icon() const = 0; //pure virtual
+
 private:
 	string m_name;
 };
@@ -72,7 +73,7 @@ void display(const Landmark* lm)
 		<< lm->name() << "." << endl;
 }
 
-int main()
+void test1()
 {
 	Landmark* landmarks[4];
 	landmarks[0] = new Hotel("Westwood Rest Good");
@@ -105,3 +106,7 @@ Destroying the restaurant Bruin Bite.
 Destroying the restaurant La Morsure de l'Ours.
 Destroying the hospital UCLA Medical Center.
 */
+
+int main() {
+	test1();
+}

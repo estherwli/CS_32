@@ -89,9 +89,7 @@ int positionOfMin(const double a[], int n)
 //    10 20 20
 bool includes(const double a1[], int n1, const double a2[], int n2)
 {
-	if (n1 < 0 || n2 < 0)
-		return false;
-	if (n2 == 0)
+	if (n2 <= 0) //treat negative n2 values as 0
 		return true;
 	if (n2 > n1)
 		return false;
@@ -151,8 +149,10 @@ int main() {
 	assert(includes(d2, 0, d1, 0));
 	assert(includes(d2, 2, d1, 0));
 	assert(includes(d2, 0, d1, 2) == false);
-	assert(includes(d2, -1, d1, -1) == false);
+	assert(includes(d2, -1, d1, -1));
+	assert(includes(d2, -3, d1, -2));
+	assert(includes(d2, -2, d1, -3));
+	assert(includes(d2, -2, d1, 3) == false);
 
 	cout << "Passed all tests." << endl;
-
 }
