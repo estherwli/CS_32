@@ -93,10 +93,15 @@ void order(double a[], int n)
 	if (n <= 1)
 		return;
 	int firstNotGreater, firstLess;
-	divide(a, n, a[n/2], firstNotGreater, firstLess);
+	divide(a, n, a[n / 2], firstNotGreater, firstLess);
 	order(a, firstNotGreater);
 	order(a + firstLess, n - firstLess);
 }
+
+
+
+
+
 
 void test1() {
 	double a1[] = { 1, 2, 3, 4, 5 };
@@ -145,9 +150,74 @@ void test2() {
 	cout << endl;
 
 }
+void test_tree()
+{
+	double a1[] = { 10, 50, 40, 20, 50, 40, 30 };
+	double a2[] = { 10, 20, 40 };
+	double a3[] = { 10, 40, 30 };
+	double a4[] = { 20, 10, 40 };
+	double a5[] = { 50, 40, 30 };
+	//	10 50 40 20 50 40 30
+	// then for this value of a2     the function must return
+	//	10 20 40			1
+	//	10 40 30			2
+	//	20 10 40			0
+	//	50 40 30			3
+
+	int n1 = 7;
+	int n2 = 3;
+
+	assert(countIncludes(a1, n1, a2, n2) == 1);
+	assert(countIncludes(a1, n1, a3, n2) == 2);
+	assert(countIncludes(a1, n1, a4, n2) == 0);
+	assert(countIncludes(a1, n1, a5, n2) == 3);
+	assert(countIncludes(a5, n2, a1, n1) == 0);
+
+	double c8[] = { 1,1,1,1,1,1,1,1,1,1,1 }; // 11
+	double c9[] = { 1,1 }; // 2
+
+	int count = countIncludes(c8, 11, c8, 2);
+	assert(count == 55);
+
+	count = countIncludes(c8, 11, c8, 1);
+	assert(count == 11);
+
+	n1 = 9;
+	double b1[] = { 10, 10, 10, 3, 5, 2, 4, 7, 0 };
+
+	order(b1, n1);
+	for (int i = 0; i < n1 - 1; i++)
+		assert(b1[i] >= b1[i + 1]);
+
+	n1 = 9;
+	double b2[] = { 10, 10, 10, 3, 3, 4, 3, 3, 3 };
+
+	order(b2, n1);
+	for (int i = 0; i < n1 - 1; i++)
+		assert(b2[i] >= b2[i + 1]);
+
+	n1 = 17;
+	double d1[] = { 5.0,  6.0, -70.0, 20.0, 50.0,  1.0,  3.0, -70.0, 90.0,
+				   78.0, 21.0,   2.0, 30.0, 40.0, 80.0, 99.0,  93.0 };  // 17
+	order(d1, n1);
+	for (int i = 0; i < n1 - 1; i++)
+		assert(d1[i] >= d1[i + 1]);
+
+	double d8[99];
+
+	for (int i = 0; i < 50; i++) 	d8[i] = i;
+	for (int i = 50; i < 99; i++) 	d8[i] = -10000 + i;
+	order(d8, 99);
+	for (int i = 0; i < 98; i++)
+		assert(d8[i] >= d8[i + 1]);
+
+	cout << endl << "pass all the tests in  = test_tree()" << endl;
+}
+
 
 int main() {
 	test1();
 	test2();
+	test_tree();
 	cout << "Passed all tests.";
 }

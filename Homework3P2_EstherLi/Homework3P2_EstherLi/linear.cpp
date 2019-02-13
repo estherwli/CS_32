@@ -28,15 +28,10 @@ int countTrue(const double a[], int n)
 {
 	if (n <= 0)
 		return 0;
-	if (n == 1) {
-		if (somePredicate(a[0]))
-			return 1; //found a true value
-		else
-			return 0;
-	}
-	int first = countTrue(a, n / 2); //divide and conquer
-	int last = countTrue(a + n / 2, n - n / 2);
-	return first + last; //adds number of true values in both halves of the array
+	if (somePredicate(a[0]))
+		return 1 + countTrue(a + 1, n - 1); //found a true value, add it to count
+	else
+		return countTrue(a + 1, n - 1); //tries to find a true value in the rest of array 
 }
 
 // Return the subscript of the first element in the array for which
@@ -99,6 +94,10 @@ bool includes(const double a1[], int n1, const double a2[], int n2)
 		return includes(a1 + 1, n1 - 1, a2, n2); //tries to find first matching value
 }
 
+
+
+
+
 int main() {
 	double a1[] = { -0.1, 0.2, -1.0, -2.3 };
 	double a2[] = { -5.2, 0, -3.2 };
@@ -148,6 +147,7 @@ int main() {
 	assert(includes(d2, 0, d1, 3) == false);
 	assert(includes(d2, 0, d1, 0));
 	assert(includes(d2, 2, d1, 0));
+	assert(includes(d2, 2, d1, -2));
 	assert(includes(d2, 0, d1, 2) == false);
 	assert(includes(d2, -1, d1, -1));
 	assert(includes(d2, -3, d1, -2));
@@ -156,3 +156,5 @@ int main() {
 
 	cout << "Passed all tests." << endl;
 }
+
+

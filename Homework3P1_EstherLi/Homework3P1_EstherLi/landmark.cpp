@@ -5,7 +5,7 @@ using namespace std;
 class Landmark {
 public:
 	Landmark(string name) //compilation error if Landmark object is created bc icon is pure virtual
-		:m_name(name) {} 
+		:m_name(name) {}
 	virtual ~Landmark() {}
 	string name() const {
 		return m_name;
@@ -36,7 +36,7 @@ class Restaurant : public Landmark {
 public:
 	Restaurant(string name, int capacity)
 		: Landmark(name) {
-			m_capacity = capacity;
+		m_capacity = capacity;
 	}
 	virtual ~Restaurant() {
 		cout << "Destroying the restaurant " << Landmark::name() << "." << endl;
@@ -66,6 +66,9 @@ public:
 		return "blue";
 	}
 };
+
+
+
 
 void display(const Landmark* lm)
 {
@@ -106,6 +109,8 @@ Destroying the restaurant Bruin Bite.
 Destroying the restaurant La Morsure de l'Ours.
 Destroying the hospital UCLA Medical Center.
 */
+
+
 
 int main() {
 	test1();
