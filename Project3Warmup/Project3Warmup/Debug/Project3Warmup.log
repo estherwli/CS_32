@@ -1,3 +1,4 @@
 ﻿  Source.cpp
 c:\users\esther\desktop\cs_32\project3warmup\project3warmup\source.cpp(85): warning C4018: '<': signed/unsigned mismatch
+c:\users\esther\desktop\cs_32\project3warmup\project3warmup\source.cpp(161): warning C4018: '<': signed/unsigned mismatch
   Project3Warmup.vcxproj -> C:\Users\Esther\Desktop\CS_32\Project3Warmup\Debug\Project3Warmup.exe

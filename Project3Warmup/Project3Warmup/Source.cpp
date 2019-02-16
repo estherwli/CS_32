@@ -63,13 +63,13 @@ void testVector()
 		assert(x[k] == expect[k]);
 }
 
-vector<int> destroyedOnes;
+vector<int> vdestroyedOnes;
 
-class Movie
+class Moviev
 {
 public:
-	Movie(int r) : m_rating(r) {}
-	~Movie() { destroyedOnes.push_back(m_rating); }
+	Moviev(int r) : m_rating(r) {}
+	~Moviev() { vdestroyedOnes.push_back(m_rating); }
 	int rating() const { return m_rating; }
 private:
 	int m_rating;
@@ -78,9 +78,9 @@ private:
 // Remove the movies in li with a rating below 50 and destroy them.
 // It is acceptable if the order of the remaining movies is not
 // the same as in the original list.
-void removeBadList(list<Movie*>& li)
+void removeBadList(list<Moviev*>& li)
 {
-	list<Movie*>::iterator it;
+	list<Moviev*>::iterator it;
 	int count = 0;
 	while (count < li.size()) {
 		for (it = li.begin(); it != li.end(); it++) {
@@ -97,16 +97,16 @@ void removeBadList(list<Movie*>& li)
 void testbad1()
 {
 	int a[8] = { 85, 80, 30, 70, 20, 15, 90, 10 };
-	list<Movie*> x;
+	list<Moviev*> x;
 	for (int k = 0; k < 8; k++)
-		x.push_back(new Movie(a[k]));
+		x.push_back(new Moviev(a[k]));
 	assert(x.size() == 8 && x.front()->rating() == 85 && x.back()->rating() == 10);
 	removeBadList(x);
-	assert(x.size() == 4 && destroyedOnes.size() == 4);
+	assert(x.size() == 4 && vdestroyedOnes.size() == 4);
 	vector<int> v;
-	for (list<Movie*>::iterator p = x.begin(); p != x.end(); p++)
+	for (list<Moviev*>::iterator p = x.begin(); p != x.end(); p++)
 	{
-		Movie* mp = *p;
+		Moviev* mp = *p;
 		v.push_back(mp->rating());
 	}
 	// Aside:  In C++11, the above loop could be
@@ -131,11 +131,11 @@ void testbad1()
 	int expect[4] = { 70, 80, 85, 90 };
 	for (int k = 0; k < 4; k++)
 		assert(v[k] == expect[k]);
-	sort(destroyedOnes.begin(), destroyedOnes.end());
+	sort(vdestroyedOnes.begin(), vdestroyedOnes.end());
 	int expectGone[4] = { 10, 15, 20, 30 };
 	for (int k = 0; k < 4; k++)
-		assert(destroyedOnes[k] == expectGone[k]);
-	for (list<Movie*>::iterator p = x.begin(); p != x.end(); p++)
+		assert(vdestroyedOnes[k] == expectGone[k]);
+	for (list<Moviev*>::iterator p = x.begin(); p != x.end(); p++)
 		delete *p;
 }
 
@@ -156,6 +156,18 @@ private:
 // the same as in the original vector.
 void removeBadVector(vector<Movie*>& v)
 {
+	vector<Movie*>::iterator it;
+	int count = 0;
+	while (count < v.size()) {
+		for (it = v.begin(); it != v.end(); it++) {
+			if ((*it)->rating() < 50) {
+				delete (*it);
+				v.erase(it);
+				break;
+			}
+		}
+		count++;
+	}
 }
 
 void testbad2()
