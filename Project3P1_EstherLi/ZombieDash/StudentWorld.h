@@ -15,6 +15,7 @@ public:
     virtual int init();
     virtual int move();
     virtual void cleanUp();
+	bool blocked(int x, int y, int dir);
 
 private:
 	std::vector<Actor*> actors;

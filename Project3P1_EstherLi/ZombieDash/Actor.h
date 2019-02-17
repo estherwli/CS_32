@@ -31,20 +31,28 @@ class Wall : public Actor {
 public:
 	Wall(StudentWorld* world, int startX, int startY);
 	virtual ~Wall() {} //DEFINE LATER???????????
-	virtual void doSomething() {}
+	virtual void doSomething();
 };
 
 class Penelope : public Actor {
 public:
 	Penelope(StudentWorld* world, int startX, int startY);
 	virtual ~Penelope() {}; //DEFINE LATER!!!!!!!!!!!!!!!
-	virtual void doSomething() {}
+	virtual void doSomething();
+
+	//accessor functions
+	bool infected() const;
+	int nInfected() const;
+
+	//mutator functions
+	void addInfect();
 
 private:
 	int m_landmine;
 	int m_flamethrower;
 	int m_vaccine;
-	bool m_infected; //move this to a People base class for PART2!
+	int m_nInfected; 
+	bool m_infected;
 };
 
 
