@@ -43,11 +43,16 @@ public:
 	//accessor functions
 	bool infected() const;
 	int nInfected() const;
+	int lives() const;
+	int landmine() const;
+	int flamethrower() const;
+	int vaccine() const;
 
 	//mutator functions
 	void addInfect();
 
 private:
+	int m_lives;
 	int m_landmine;
 	int m_flamethrower;
 	int m_vaccine;

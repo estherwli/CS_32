@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 class Actor;
+class Penelope;
 
 // Students:  Add code to this file, StudentWorld.cpp, Actor.h, and Actor.cpp
 
@@ -12,14 +13,16 @@ class StudentWorld : public GameWorld
 {
 public:
     StudentWorld(std::string assetPath);
+	~StudentWorld();
     virtual int init();
     virtual int move();
     virtual void cleanUp();
 	bool blocked(int x, int y, int dir);
+	std::string stat();
 
 private:
 	std::vector<Actor*> actors;
-	Actor* player;
+	Penelope* player;
 };
 
 #endif // STUDENTWORLD_H_

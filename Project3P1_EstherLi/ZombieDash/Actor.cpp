@@ -38,6 +38,7 @@ void Wall::doSomething() {
 
 Penelope::Penelope(StudentWorld* world, int startX, int startY)
 	: Actor(IID_PLAYER, startX, startY, GraphObject::right, 0, world, "penelope") {
+	m_lives = 3;
 	m_landmine = 0;
 	m_flamethrower = 0;
 	m_vaccine = 0;
@@ -51,6 +52,21 @@ bool Penelope::infected() const {
 
 int Penelope::nInfected() const {
 	return m_nInfected;
+}
+
+int Penelope::lives() const {
+	return m_lives;
+}
+
+int Penelope::landmine() const {
+	return m_landmine;
+}
+
+int Penelope::flamethrower() const {
+	return m_flamethrower;
+}
+int Penelope::vaccine() const {
+	return m_vaccine;
 }
 
 void Penelope::addInfect() {
