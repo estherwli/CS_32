@@ -16,17 +16,19 @@ public:
 	//accessor functions
 	StudentWorld* world() const;
 	bool dead() const;
-	std::string name() const;
-	bool blocked() const;
+	bool blockable() const;
+	bool exitable() const;
 
 	//mutator functions
 	void setDead();
-	void setBlocked();
+	void setBlockable();
+	void setExitable();
 
 private:
 	StudentWorld* m_world;
 	bool m_dead;
-	bool m_blocked;
+	bool m_blockable;
+	bool m_exitable;
 };
 
 class Wall : public Actor {
@@ -62,11 +64,11 @@ private:
 	bool m_infected;
 };
 
-//class Exit : public Actor {
-//public:
-//	Exit(StudentWorld* world, int startX, int startY);
-//	virtual ~Exit();
-//	virtual void doSomething();
-//};
+class Exit : public Actor {
+public:
+	Exit(StudentWorld* world, int startX, int startY);
+	virtual ~Exit() {} //define later?
+	virtual void doSomething();
+};
 
 #endif // ACTOR_H_

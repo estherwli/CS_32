@@ -17,12 +17,17 @@ public:
     virtual int init();
     virtual int move();
     virtual void cleanUp();
+	
+	//helper functions
 	bool blocked(int x, int y);
-	std::string stat();
+	bool overlapped(int x1, int y1, int x2, int y2);
+	bool foundExit(Actor* me);
+	
+	//mutator functions
 	void setCompleted(bool input);
 
-
-	//accessor methods
+	//accessor functions
+	std::string stat() const;
 	bool completed() const;
 
 private:

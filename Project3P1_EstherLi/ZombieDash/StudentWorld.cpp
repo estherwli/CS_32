@@ -7,7 +7,10 @@
 #include <iomanip>
 using namespace std;
 
-const string FILENAME = "level01.txt";
+const string FILENAME = "level03.txt";
+const double OVERLAP_DISTANCE = 100.0;
+const int NO_OVERLAP = 0;
+const int OVERLAP_PLAYER = 1;
 
 GameWorld* createStudentWorld(string assetPath)
 {
@@ -25,7 +28,7 @@ StudentWorld::~StudentWorld() {
 
 int StudentWorld::init()
 {
-	setCompleted(false);
+	setCompleted(false); //level has not been completed yet
 	Level lev(assetPath());
 	string levelFile = FILENAME;
 	Level::LoadResult result = lev.loadLevel(levelFile);
@@ -46,6 +49,9 @@ int StudentWorld::init()
 					break;
 				case Level::player:
 					m_player = new Penelope(this, (SPRITE_WIDTH * level_x), (SPRITE_HEIGHT * level_y));
+					break;
+				case Level::exit:
+					m_actors.push_back(new Exit(this, (SPRITE_WIDTH * level_x), (SPRITE_HEIGHT * level_y)));
 					break;
 				}
 			}
@@ -98,44 +104,75 @@ void StudentWorld::cleanUp()
 
 bool StudentWorld::blocked(int x, int y) { //parameters are coordinates of the location we're trying to move to
 
-	//gets the dimensions of player's bounding box
-	int myX = x + SPRITE_WIDTH - 1;
-	int myY = y + SPRITE_HEIGHT - 1;
+	//gets the coordinates of person's bounding box 
+	int x2 = x + SPRITE_WIDTH - 1;
+	int y2 = y + SPRITE_HEIGHT - 1;
 
 	vector<Actor*>::iterator it;
 	it = m_actors.begin();
 	while (it != m_actors.end()) {
-		if ((*it)->blocked()) {
-			//gets the dimensions of obstacle's bounding box
+		if ((*it)->blockable()) {
+			//gets the coordinates of obstacle's bounding box 
 			int xLowerBound = (*it)->getX();
 			int xUpperBound = xLowerBound + SPRITE_WIDTH - 1;
 			int yLowerBound = (*it)->getY();
 			int yUpperBound = yLowerBound + SPRITE_HEIGHT - 1;
-			//checks if player's bounding box will intersect with an obstacle's bounding box
+			//checks if any part of person's bounding box will intersect with an obstacle's bounding box
 			if (x <= xUpperBound && x >= xLowerBound && y <= yUpperBound && y >= yLowerBound) //checks lower left corner
 				return true;
-			else if (myX <= xUpperBound && myX >= xLowerBound && myY <= yUpperBound && myY >= yLowerBound) //checks upper right corner
+			else if (x2 <= xUpperBound && x2 >= xLowerBound && y2 <= yUpperBound && y2 >= yLowerBound) //checks upper right corner
 				return true;
-			else if (myX <= xUpperBound && myX >= xLowerBound && y <= yUpperBound && y >= yLowerBound) //checks lower right corner
+			else if (x2 <= xUpperBound && x2 >= xLowerBound && y <= yUpperBound && y >= yLowerBound) //checks lower right corner
 				return true;
-			else if (x <= xUpperBound && x >= xLowerBound && myY <= yUpperBound && myY >= yLowerBound) //checks upper left corner
+			else if (x <= xUpperBound && x >= xLowerBound && y2 <= yUpperBound && y2 >= yLowerBound) //checks upper left corner
 				return true;
 		}
 		it++;
 	}
+	return false; //person's bounding box does not intersect with an obstacle's bounding box
+}
+
+bool StudentWorld::overlapped(int x1, int y1, int x2, int y2) {
+	//gets the coordinates of the center of an object's bounding box 
+	double myCenterX = x1 + (SPRITE_WIDTH / 2.0);
+	double myCenterY = y1 + (SPRITE_HEIGHT / 2.0);
+
+	//gets the coordinates of the center of an person's bounding box 
+	double otherCenterX = x2 + SPRITE_WIDTH / 2.0;
+	double otherCenterY = y2 + SPRITE_HEIGHT / 2.0;
+
+	//checks if the euclidean distance between the two centers is close enough to overlap
+	double deltaX = otherCenterX - myCenterX;
+	double deltaY = otherCenterY - myCenterY;
+	if (deltaX * deltaX + deltaY * deltaY <= OVERLAP_DISTANCE)
+		return true;
+
+	//vector<Actor*>::iterator it;
+	//while (it != m_actors.end()) {
+	//	double otherCenterX = (*it)->getX() + SPRITE_WIDTH / 2.0;
+	//	double otherCenterY = (*it)->getY() + SPRITE_HEIGHT / 2.0;
+	//	double deltaX = otherCenterX - myCenterX;
+	//	double deltaY = otherCenterY - myCenterY;
+	//	if (deltaX * deltaX + deltaY * deltaY <= OVERLAP_DISTANCE)
+	//		return OVERLAP_OTHER;
+	//	it++;
+	//}
 	return false;
 }
 
-string StudentWorld::stat() {
+void StudentWorld::setCompleted(bool input) {
+	m_completed = input;
+}
+
+string StudentWorld::stat() const {
 	ostringstream score;
 	score.setf(ios::fixed);
 	score.fill('0'); //width is set to 6, empty spaces are filled with '0'
 	score << "Score: " << setw(6) << getScore();
 
-
 	ostringstream stat;
 	stat.setf(ios::fixed);
-	stat << "  Level: " << getLevel() << "  Lives: " << m_player->lives() << "  Vaccines: " << m_player->vaccine()
+	stat << "  Level: " << getLevel() << "  Lives: " << m_player->lives() << "  Vacc: " << m_player->vaccine()
 		<< "  Flames: " << m_player->flamethrower() << "  Mines: " << m_player->landmine() << "  Infected: " << m_player->nInfected();
 
 	return score.str() + stat.str();
@@ -145,9 +182,24 @@ bool StudentWorld::completed() const {
 	return m_completed;
 }
 
-void StudentWorld::setCompleted(bool input) {
-	m_completed = input;
+bool StudentWorld::foundExit(Actor* me) {
+	int x1 = me->getX();
+	int y1 = me->getY();
+	vector<Actor*>::iterator it;
+	it = m_actors.begin();
+	while (it != m_actors.end()) {
+		if ((*it)->exitable()) {
+			int x2 = (*it)->getX();
+			int y2 = (*it)->getY();
+			if (overlapped(x1, y1, x2, y2))
+				return true;
+		}
+		it++;
+	}
+	return false;
 }
+
+
 
 
 

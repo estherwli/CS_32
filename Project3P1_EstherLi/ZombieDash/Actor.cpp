@@ -6,11 +6,11 @@ using namespace std;
 
 Actor::Actor(int imageID, double startX, double startY, Direction startDirection, int depth, StudentWorld* world)
 	:GraphObject(imageID, startX, startY, startDirection, depth) {
-	m_dead = false;
 	m_world = world;
-	m_blocked = false;
+	m_dead = false;
+	m_blockable = false;
+	m_exitable = false;
 }
-
 
 StudentWorld* Actor::world() const {
 	return m_world;
@@ -21,16 +21,24 @@ bool Actor::dead() const {
 }
 
 
+bool Actor::blockable() const {
+	return m_blockable;
+}
+
+bool Actor::exitable() const {
+	return m_exitable;
+}
+
 void Actor::setDead() {
 	m_dead = true;
 }
 
-bool Actor::blocked() const {
-	return m_blocked;
+void Actor::setBlockable() {
+	m_blockable = true;
 }
 
-void Actor::setBlocked() {
-	m_blocked = true;
+void Actor::setExitable() {
+	m_exitable = true;
 }
 
 //******************PENELOPE******************
@@ -83,10 +91,12 @@ void Penelope::doSomething() {
 		else
 			addInfect();
 	}
+	if (world()->foundExit(this)) 
+		world()->setCompleted(true);
+	int x = getX();
+	int y = getY();
 	int ch;
 	if (world()->getKey(ch)) {
-		int x = getX();
-		int y = getY();
 		switch (ch) {
 		case KEY_PRESS_LEFT:
 			setDirection(left);
@@ -116,7 +126,7 @@ void Penelope::doSomething() {
 //******************WALL******************
 Wall::Wall(StudentWorld* world, int startX, int startY)
 	:Actor(IID_WALL, startX, startY, GraphObject::right, 0, world) {
-	setBlocked();
+	setBlockable();
 }
 
 void Wall::doSomething() {
@@ -124,14 +134,15 @@ void Wall::doSomething() {
 }
 
 //******************EXIT******************
-//Exit::Exit(StudentWorld* world, int startX, int startY)
-//	: Actor(IID_EXIT, startX, startY, GraphObject::right, 1, world) {
-//}
-//
-//void Exit::doSomething() {
-//	//IMPLEMENT LATER
-//	world()->setCompleted(true);
-//}
+Exit::Exit(StudentWorld* world, int startX, int startY)
+	: Actor(IID_EXIT, startX, startY, GraphObject::right, 1, world) {
+	setExitable();
+}
+
+void Exit::doSomething() {
+	return;
+}
+
 
 
 
