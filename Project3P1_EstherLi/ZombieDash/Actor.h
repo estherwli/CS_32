@@ -38,6 +38,7 @@ class Penelope : public Actor {
 public:
 	Penelope(StudentWorld* world, int startX, int startY);
 	virtual ~Penelope() {}; //DEFINE LATER!!!!!!!!!!!!!!!
+	
 	virtual void doSomething();
 
 	//accessor functions
