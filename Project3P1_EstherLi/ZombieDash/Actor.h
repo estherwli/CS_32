@@ -7,7 +7,7 @@ class StudentWorld;
 
 class Actor : public GraphObject {
 public:
-	Actor(int imageID, double startX, double startY, Direction startDirection, int depth, StudentWorld* world, std::string name);
+	Actor(int imageID, double startX, double startY, Direction startDirection, int depth, StudentWorld* world);
 	virtual ~Actor() {} //DEFINE LATER??????
 
 	//virtual functions
@@ -17,14 +17,16 @@ public:
 	StudentWorld* world() const;
 	bool dead() const;
 	std::string name() const;
+	bool blocked() const;
 
 	//mutator functions
 	void setDead();
+	void setBlocked();
 
 private:
 	StudentWorld* m_world;
 	bool m_dead;
-	std::string m_name;
+	bool m_blocked;
 };
 
 class Wall : public Actor {
@@ -38,7 +40,6 @@ class Penelope : public Actor {
 public:
 	Penelope(StudentWorld* world, int startX, int startY);
 	virtual ~Penelope() {}; //DEFINE LATER!!!!!!!!!!!!!!!
-	
 	virtual void doSomething();
 
 	//accessor functions
@@ -61,5 +62,11 @@ private:
 	bool m_infected;
 };
 
+//class Exit : public Actor {
+//public:
+//	Exit(StudentWorld* world, int startX, int startY);
+//	virtual ~Exit();
+//	virtual void doSomething();
+//};
 
 #endif // ACTOR_H_

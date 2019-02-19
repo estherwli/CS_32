@@ -19,10 +19,16 @@ public:
     virtual void cleanUp();
 	bool blocked(int x, int y);
 	std::string stat();
+	void setCompleted(bool input);
+
+
+	//accessor methods
+	bool completed() const;
 
 private:
 	std::vector<Actor*> m_actors;
 	Penelope* m_player;
+	bool m_completed;
 };
 
 #endif // STUDENTWORLD_H_

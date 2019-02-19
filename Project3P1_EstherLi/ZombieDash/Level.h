@@ -12,7 +12,7 @@ class Level
 public:
 
     enum MazeEntry {
-        empty, m_player, dumb_zombie, smart_zombie, citizen, wall, exit, pit,
+        empty, player, dumb_zombie, smart_zombie, citizen, wall, exit, pit,
         vaccine_goodie, gas_can_goodie, landmine_goodie
     };
 
@@ -64,7 +64,7 @@ public:
                     default:   return load_fail_bad_format;
                     case ' ':  me = empty;                      break;
                     case 'X':  me = exit;   foundExit = true;   break;
-                    case '@':  me = m_player; foundPlayer = true; break;
+                    case '@':  me = player; foundPlayer = true; break;
                     case 'D':  me = dumb_zombie;                break;
                     case 'S':  me = smart_zombie;               break;
                     case 'C':  me = citizen;                    break;

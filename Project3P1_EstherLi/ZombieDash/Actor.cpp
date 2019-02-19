@@ -4,11 +4,11 @@
 #include <string>
 using namespace std;
 
-Actor::Actor(int imageID, double startX, double startY, Direction startDirection, int depth, StudentWorld* world, string name)
+Actor::Actor(int imageID, double startX, double startY, Direction startDirection, int depth, StudentWorld* world)
 	:GraphObject(imageID, startX, startY, startDirection, depth) {
 	m_dead = false;
 	m_world = world;
-	m_name = name;
+	m_blocked = false;
 }
 
 
@@ -20,24 +20,22 @@ bool Actor::dead() const {
 	return m_dead;
 }
 
-string Actor::name() const {
-	return m_name;
-}
 
 void Actor::setDead() {
 	m_dead = true;
 }
 
-
-Wall::Wall(StudentWorld* world, int startX, int startY)
-	:Actor(IID_WALL, startX, startY, GraphObject::right, 0, world, "wall") {}
-
-void Wall::doSomething() {
-	return;
+bool Actor::blocked() const {
+	return m_blocked;
 }
 
+void Actor::setBlocked() {
+	m_blocked = true;
+}
+
+//******************PENELOPE******************
 Penelope::Penelope(StudentWorld* world, int startX, int startY)
-	: Actor(IID_PLAYER, startX, startY, GraphObject::right, 0, world, "penelope") {
+	: Actor(IID_PLAYER, startX, startY, GraphObject::right, 0, world) {
 	m_lives = 3;
 	m_landmine = 0;
 	m_flamethrower = 0;
@@ -114,6 +112,26 @@ void Penelope::doSomething() {
 	}
 	return;
 }
+
+//******************WALL******************
+Wall::Wall(StudentWorld* world, int startX, int startY)
+	:Actor(IID_WALL, startX, startY, GraphObject::right, 0, world) {
+	setBlocked();
+}
+
+void Wall::doSomething() {
+	return;
+}
+
+//******************EXIT******************
+//Exit::Exit(StudentWorld* world, int startX, int startY)
+//	: Actor(IID_EXIT, startX, startY, GraphObject::right, 1, world) {
+//}
+//
+//void Exit::doSomething() {
+//	//IMPLEMENT LATER
+//	world()->setCompleted(true);
+//}
 
 
 

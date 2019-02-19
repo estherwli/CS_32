@@ -25,6 +25,7 @@ StudentWorld::~StudentWorld() {
 
 int StudentWorld::init()
 {
+	setCompleted(false);
 	Level lev(assetPath());
 	string levelFile = FILENAME;
 	Level::LoadResult result = lev.loadLevel(levelFile);
@@ -43,7 +44,7 @@ int StudentWorld::init()
 				case Level::wall:
 					m_actors.push_back(new Wall(this, (SPRITE_WIDTH * level_x), (SPRITE_HEIGHT * level_y)));
 					break;
-				case Level::m_player:
+				case Level::player:
 					m_player = new Penelope(this, (SPRITE_WIDTH * level_x), (SPRITE_HEIGHT * level_y));
 					break;
 				}
@@ -63,7 +64,8 @@ int StudentWorld::move()
 			m_actors[i]->doSomething();
 			if (m_player->dead())
 				return GWSTATUS_PLAYER_DIED;
-			//IMPLEMENT LATER: IF PENELOPE COMPLETED CURRENT LEVEL
+			if (completed())
+				return GWSTATUS_FINISHED_LEVEL;
 		}
 	}
 	//delete and remove dead game objects
@@ -103,13 +105,13 @@ bool StudentWorld::blocked(int x, int y) { //parameters are coordinates of the l
 	vector<Actor*>::iterator it;
 	it = m_actors.begin();
 	while (it != m_actors.end()) {
-		//gets the dimensions of actor's bounding box
-		int xLowerBound = (*it)->getX(); 
-		int xUpperBound = xLowerBound + SPRITE_WIDTH - 1;
-		int yLowerBound = (*it)->getY();
-		int yUpperBound = yLowerBound + SPRITE_HEIGHT - 1;
-		if ((*it)->name() == "wall") {
-			//checks if actor's bounding box will intersect with an obstacle's bounding box
+		if ((*it)->blocked()) {
+			//gets the dimensions of obstacle's bounding box
+			int xLowerBound = (*it)->getX();
+			int xUpperBound = xLowerBound + SPRITE_WIDTH - 1;
+			int yLowerBound = (*it)->getY();
+			int yUpperBound = yLowerBound + SPRITE_HEIGHT - 1;
+			//checks if player's bounding box will intersect with an obstacle's bounding box
 			if (x <= xUpperBound && x >= xLowerBound && y <= yUpperBound && y >= yLowerBound) //checks lower left corner
 				return true;
 			else if (myX <= xUpperBound && myX >= xLowerBound && myY <= yUpperBound && myY >= yLowerBound) //checks upper right corner
@@ -122,10 +124,6 @@ bool StudentWorld::blocked(int x, int y) { //parameters are coordinates of the l
 		it++;
 	}
 	return false;
-
-
-
-
 }
 
 string StudentWorld::stat() {
@@ -141,6 +139,14 @@ string StudentWorld::stat() {
 		<< "  Flames: " << m_player->flamethrower() << "  Mines: " << m_player->landmine() << "  Infected: " << m_player->nInfected();
 
 	return score.str() + stat.str();
+}
+
+bool StudentWorld::completed() const {
+	return m_completed;
+}
+
+void StudentWorld::setCompleted(bool input) {
+	m_completed = input;
 }
 
 
