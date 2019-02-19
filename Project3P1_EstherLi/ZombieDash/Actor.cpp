@@ -89,7 +89,6 @@ void Penelope::doSomething() {
 	if (world()->getKey(ch)) {
 		int x = getX();
 		int y = getY();
-		int dir = getDirection();
 		switch (ch) {
 		case KEY_PRESS_LEFT:
 			setDirection(left);
