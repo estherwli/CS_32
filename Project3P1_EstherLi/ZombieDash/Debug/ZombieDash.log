@@ -1,2 +1,11 @@
-﻿  GameController.cpp
+﻿  Actor.cpp
+c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\actor.cpp(90): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\actor.cpp(91): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+  GameController.cpp
+  GameWorld.cpp
+  main.cpp
+  StudentWorld.cpp
+c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\studentworld.cpp(61): warning C4018: '<': signed/unsigned mismatch
+c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\studentworld.cpp(70): warning C4018: '<': signed/unsigned mismatch
+  Generating Code...
   ZombieDash.vcxproj -> C:\Users\Esther\Desktop\CS_32\Project3P1_EstherLi\Debug\ZombieDash.exe
