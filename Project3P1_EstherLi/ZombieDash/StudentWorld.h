@@ -17,12 +17,12 @@ public:
     virtual int init();
     virtual int move();
     virtual void cleanUp();
-	bool blocked(int x, int y, int dir);
+	bool blocked(int x, int y);
 	std::string stat();
 
 private:
-	std::vector<Actor*> actors;
-	Penelope* player;
+	std::vector<Actor*> m_actors;
+	Penelope* m_player;
 };
 
 #endif // STUDENTWORLD_H_

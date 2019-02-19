@@ -259,13 +259,13 @@ void GameController::doSomething()
 			int status = m_gw->move();
 			if (status == GWSTATUS_PLAYER_DIED)
 			{
-				// animate one last frame so the player can see what happened
+				// animate one last frame so the m_player can see what happened
 				m_nextStateAfterAnimate = (m_gw->isGameOver() ? gameover : contgame);
 			}
 			else if (status == GWSTATUS_FINISHED_LEVEL)
 			{
 				m_gw->advanceToNextLevel();
-				// animate one last frame so the player can see what happened
+				// animate one last frame so the m_player can see what happened
 				m_nextStateAfterAnimate = finishedlevel;
 			}
 		}

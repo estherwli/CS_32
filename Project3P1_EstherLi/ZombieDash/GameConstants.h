@@ -62,7 +62,7 @@ const double SPRITE_WIDTH_GL = .6; // note - this is tied implicitly to SPRITE_W
 const double SPRITE_HEIGHT_GL = .5; // note - this is tied implicitly to SPRITE_HEIGHT due to carey's sloppy openGL programming
 
 
-// status of each tick (did the player die?)
+// status of each tick (did the m_player die?)
 
 const int GWSTATUS_PLAYER_DIED   = 0;
 const int GWSTATUS_CONTINUE_GAME = 1;

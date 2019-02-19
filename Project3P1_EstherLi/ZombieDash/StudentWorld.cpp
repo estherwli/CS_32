@@ -41,10 +41,10 @@ int StudentWorld::init()
 				Level::MazeEntry ge = lev.getContentsOf(level_x, level_y);
 				switch (ge) {
 				case Level::wall:
-					actors.push_back(new Wall(this, (SPRITE_WIDTH * level_x), (SPRITE_HEIGHT * level_y)));
+					m_actors.push_back(new Wall(this, (SPRITE_WIDTH * level_x), (SPRITE_HEIGHT * level_y)));
 					break;
-				case Level::player:
-					player = new Penelope(this, (SPRITE_WIDTH * level_x), (SPRITE_HEIGHT * level_y));
+				case Level::m_player:
+					m_player = new Penelope(this, (SPRITE_WIDTH * level_x), (SPRITE_HEIGHT * level_y));
 					break;
 				}
 			}
@@ -57,21 +57,21 @@ int StudentWorld::init()
 int StudentWorld::move()
 {
 	//give actor a chance to doSomething()
-	player->doSomething();
-	for (int i = 0; i < actors.size(); i++) {
-		if (!actors[i]->dead()) {
-			actors[i]->doSomething();
-			if (player->dead())
+	m_player->doSomething();
+	for (int i = 0; i < m_actors.size(); i++) {
+		if (!m_actors[i]->dead()) {
+			m_actors[i]->doSomething();
+			if (m_player->dead())
 				return GWSTATUS_PLAYER_DIED;
 			//IMPLEMENT LATER: IF PENELOPE COMPLETED CURRENT LEVEL
 		}
 	}
 	//delete and remove dead game objects
-	for (int i = 0; i < actors.size(); i++) {
-		if (actors[i]->dead()) {
-			delete actors[i];
-			actors[i] = actors[actors.size() - 1];
-			actors.pop_back();
+	for (int i = 0; i < m_actors.size(); i++) {
+		if (m_actors[i]->dead()) {
+			delete m_actors[i];
+			m_actors[i] = m_actors[m_actors.size() - 1];
+			m_actors.pop_back();
 			i--;
 		}
 	}
@@ -84,45 +84,48 @@ int StudentWorld::move()
 
 void StudentWorld::cleanUp()
 {
-	if (player != nullptr) //ensures consecutive calls to cleanUp won't have undefined behavior
-		delete player;
-	for (int i = actors.size() - 1; i >= 0; i--) {
-		if (actors[i] != nullptr) {
-			delete actors[i];
-			actors.pop_back();
+	if (m_player != nullptr) //ensures consecutive calls to cleanUp won't have undefined behavior
+		delete m_player;
+	for (int i = m_actors.size() - 1; i >= 0; i--) {
+		if (m_actors[i] != nullptr) {
+			delete m_actors[i];
+			m_actors.pop_back();
 		}
 	}
 }
 
-bool StudentWorld::blocked(int x, int y, int dir) { //parameters are coordinates of the location we're trying to move to
-	Level lev(assetPath());
-	string levelFile = FILENAME;
-	Level::LoadResult result = lev.loadLevel(levelFile);
+bool StudentWorld::blocked(int x, int y) { //parameters are coordinates of the location we're trying to move to
 
-	//each Level coordinate represents a 16x16 box (SPRITE_WIDTH x SPRITE_HEIGHT)
-	//the following if-statements get the bottom-leftmost coordinate of our destination box 
-	if (dir == 0) //right
-		while (x % SPRITE_WIDTH != 0)
-			x += 4;
-	if (dir == 180) //left
-		while (x % SPRITE_WIDTH != 0)
-			x -= 4;
-	if (dir == 90) //up
-		while (y % SPRITE_HEIGHT != 0)
-			y += 4;
-	if (dir == 270) //down
-		while (y % SPRITE_HEIGHT != 0)
-			y -= 4;
+	//gets the dimensions of player's bounding box
+	int myX = x + SPRITE_WIDTH - 1;
+	int myY = y + SPRITE_HEIGHT - 1;
 
-	Level::MazeEntry ge = lev.getContentsOf(x / SPRITE_WIDTH, y / SPRITE_HEIGHT); //division converts 256x256 to 16x16 
-	switch (ge) {
-	case Level::wall:
-	case Level::citizen:
-	case Level::dumb_zombie:
-	case Level::smart_zombie:
-		return true; 	//destination is blocked if there is a wall, citizen, or zombie
+	vector<Actor*>::iterator it;
+	it = m_actors.begin();
+	while (it != m_actors.end()) {
+		//gets the dimensions of actor's bounding box
+		int xLowerBound = (*it)->getX(); 
+		int xUpperBound = xLowerBound + SPRITE_WIDTH - 1;
+		int yLowerBound = (*it)->getY();
+		int yUpperBound = yLowerBound + SPRITE_HEIGHT - 1;
+		if ((*it)->name() == "wall") {
+			//checks if actor's bounding box will intersect with an obstacle's bounding box
+			if (x <= xUpperBound && x >= xLowerBound && y <= yUpperBound && y >= yLowerBound) //checks lower left corner
+				return true;
+			else if (myX <= xUpperBound && myX >= xLowerBound && myY <= yUpperBound && myY >= yLowerBound) //checks upper right corner
+				return true;
+			else if (myX <= xUpperBound && myX >= xLowerBound && y <= yUpperBound && y >= yLowerBound) //checks lower right corner
+				return true;
+			else if (x <= xUpperBound && x >= xLowerBound && myY <= yUpperBound && myY >= yLowerBound) //checks upper left corner
+				return true;
+		}
+		it++;
 	}
 	return false;
+
+
+
+
 }
 
 string StudentWorld::stat() {
@@ -130,12 +133,12 @@ string StudentWorld::stat() {
 	score.setf(ios::fixed);
 	score.fill('0'); //width is set to 6, empty spaces are filled with '0'
 	score << "Score: " << setw(6) << getScore();
-	
+
 
 	ostringstream stat;
 	stat.setf(ios::fixed);
-	stat << "  Level: " << getLevel() << "  Lives: " << player->lives() << "  Vaccines: " << player->vaccine() 
-		<< "  Flames: " << player->flamethrower() << "  Mines: " << player->landmine() << "  Infected: " << player->nInfected();
+	stat << "  Level: " << getLevel() << "  Lives: " << m_player->lives() << "  Vaccines: " << m_player->vaccine()
+		<< "  Flames: " << m_player->flamethrower() << "  Mines: " << m_player->landmine() << "  Infected: " << m_player->nInfected();
 
 	return score.str() + stat.str();
 }

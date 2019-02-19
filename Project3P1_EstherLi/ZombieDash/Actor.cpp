@@ -93,22 +93,22 @@ void Penelope::doSomething() {
 		switch (ch) {
 		case KEY_PRESS_LEFT:
 			setDirection(left);
-			if (!world()->blocked(x - 4, y, left))
+			if (!world()->blocked(x - 4, y))
 				moveTo(x - 4, y);
 			break;
 		case KEY_PRESS_RIGHT:
 			setDirection(right);
-			if (!world()->blocked(x + 4, y, right))
+			if (!world()->blocked(x + 4, y))
 				moveTo(x + 4, y);
 			break;
 		case KEY_PRESS_UP:
 			setDirection(up);
-			if (!world()->blocked(x, y + 4, up))
+			if (!world()->blocked(x, y + 4))
 				moveTo(x, y + 4);
 			break;
 		case KEY_PRESS_DOWN:
 			setDirection(down);
-			if (!world()->blocked(x, y - 4, down))
+			if (!world()->blocked(x, y - 4))
 				moveTo(x, y - 4);
 			break;
 		}
