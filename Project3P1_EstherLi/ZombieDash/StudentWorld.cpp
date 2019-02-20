@@ -7,10 +7,7 @@
 #include <iomanip>
 using namespace std;
 
-const string FILENAME = "level03.txt";
 const double OVERLAP_DISTANCE = 100.0;
-const int NO_OVERLAP = 0;
-const int OVERLAP_PLAYER = 1;
 
 GameWorld* createStudentWorld(string assetPath)
 {
@@ -28,9 +25,9 @@ StudentWorld::~StudentWorld() {
 
 int StudentWorld::init()
 {
-	setCompleted(false); //level has not been completed yet
+	m_completed = false; //level has not been completed yet
 	Level lev(assetPath());
-	string levelFile = FILENAME;
+	string levelFile = level();
 	Level::LoadResult result = lev.loadLevel(levelFile);
 	if (result == Level::load_fail_file_not_found)
 		cerr << "Cannot find " << levelFile << " data file" << endl;
@@ -53,6 +50,9 @@ int StudentWorld::init()
 				case Level::exit:
 					m_actors.push_back(new Exit(this, (SPRITE_WIDTH * level_x), (SPRITE_HEIGHT * level_y)));
 					break;
+				case Level::pit:
+					m_actors.push_back(new Pit(this, (SPRITE_WIDTH * level_x), (SPRITE_HEIGHT * level_y)));
+					break;
 				}
 			}
 		}
@@ -64,6 +64,8 @@ int StudentWorld::init()
 int StudentWorld::move()
 {
 	//give actor a chance to doSomething()
+	if (m_player->dead())
+		return GWSTATUS_PLAYER_DIED;
 	m_player->doSomething();
 	for (int i = 0; i < m_actors.size(); i++) {
 		if (!m_actors[i]->dead()) {
@@ -102,7 +104,7 @@ void StudentWorld::cleanUp()
 	}
 }
 
-bool StudentWorld::blocked(int x, int y) { //parameters are coordinates of the location we're trying to move to
+bool StudentWorld::blocked(int x, int y, Actor::ActorType type) { //parameters are coordinates of the location we're trying to move to
 
 	//gets the coordinates of person's bounding box 
 	int x2 = x + SPRITE_WIDTH - 1;
@@ -111,7 +113,7 @@ bool StudentWorld::blocked(int x, int y) { //parameters are coordinates of the l
 	vector<Actor*>::iterator it;
 	it = m_actors.begin();
 	while (it != m_actors.end()) {
-		if ((*it)->blockable()) {
+		if ((*it)->getType() == type) {
 			//gets the coordinates of obstacle's bounding box 
 			int xLowerBound = (*it)->getX();
 			int xUpperBound = xLowerBound + SPRITE_WIDTH - 1;
@@ -146,22 +148,12 @@ bool StudentWorld::overlapped(int x1, int y1, int x2, int y2) {
 	double deltaY = otherCenterY - myCenterY;
 	if (deltaX * deltaX + deltaY * deltaY <= OVERLAP_DISTANCE)
 		return true;
-
-	//vector<Actor*>::iterator it;
-	//while (it != m_actors.end()) {
-	//	double otherCenterX = (*it)->getX() + SPRITE_WIDTH / 2.0;
-	//	double otherCenterY = (*it)->getY() + SPRITE_HEIGHT / 2.0;
-	//	double deltaX = otherCenterX - myCenterX;
-	//	double deltaY = otherCenterY - myCenterY;
-	//	if (deltaX * deltaX + deltaY * deltaY <= OVERLAP_DISTANCE)
-	//		return OVERLAP_OTHER;
-	//	it++;
-	//}
-	return false;
+	else
+		return false;
 }
 
-void StudentWorld::setCompleted(bool input) {
-	m_completed = input;
+void StudentWorld::setCompleted() {
+	m_completed = true;
 }
 
 string StudentWorld::stat() const {
@@ -182,13 +174,25 @@ bool StudentWorld::completed() const {
 	return m_completed;
 }
 
-bool StudentWorld::foundExit(Actor* me) {
+string StudentWorld::level() {
+	ostringstream nLevel;
+	nLevel.setf(ios::fixed);
+	nLevel.fill('0');
+	nLevel << setw(2) << getLevel();
+	
+	ostringstream level;
+	level.setf(ios::fixed);
+	level << "level" << nLevel.str() << ".txt";
+	return level.str();
+}
+
+bool StudentWorld::foundSomething(Actor* me, Actor::ActorType type) {
 	int x1 = me->getX();
 	int y1 = me->getY();
 	vector<Actor*>::iterator it;
 	it = m_actors.begin();
 	while (it != m_actors.end()) {
-		if ((*it)->exitable()) {
+		if ((*it)->getType() == type) {
 			int x2 = (*it)->getX();
 			int y2 = (*it)->getY();
 			if (overlapped(x1, y1, x2, y2))
@@ -197,6 +201,10 @@ bool StudentWorld::foundExit(Actor* me) {
 		it++;
 	}
 	return false;
+}
+
+void StudentWorld::createFlame(int x, int y, int dir) {
+	m_actors.push_back(new Flame(this, x, y, dir));
 }
 
 

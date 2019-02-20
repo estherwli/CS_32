@@ -2,9 +2,9 @@
 #define STUDENTWORLD_H_
 
 #include "GameWorld.h"
+#include "Actor.h"
 #include <string>
 #include <vector>
-class Actor;
 class Penelope;
 
 // Students:  Add code to this file, StudentWorld.cpp, Actor.h, and Actor.cpp
@@ -19,12 +19,14 @@ public:
     virtual void cleanUp();
 	
 	//helper functions
-	bool blocked(int x, int y);
+	bool blocked(int x, int y, Actor::ActorType);
 	bool overlapped(int x1, int y1, int x2, int y2);
-	bool foundExit(Actor* me);
+	std::string level();
+	bool foundSomething(Actor* me, Actor::ActorType type);
+	void createFlame(int x, int y, int dir);
 	
 	//mutator functions
-	void setCompleted(bool input);
+	void setCompleted();
 
 	//accessor functions
 	std::string stat() const;
