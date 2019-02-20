@@ -104,7 +104,7 @@ void StudentWorld::cleanUp()
 	}
 }
 
-bool StudentWorld::blocked(int x, int y, Actor::ActorType type) { //parameters are coordinates of the location we're trying to move to
+bool StudentWorld::blocked(int x, int y, bool (*f)(Actor*)) { //parameters are coordinates of destination and the specific blocking
 
 	//gets the coordinates of person's bounding box 
 	int x2 = x + SPRITE_WIDTH - 1;
@@ -113,7 +113,7 @@ bool StudentWorld::blocked(int x, int y, Actor::ActorType type) { //parameters a
 	vector<Actor*>::iterator it;
 	it = m_actors.begin();
 	while (it != m_actors.end()) {
-		if ((*it)->getType() == type) {
+		if (f(*it)) {
 			//gets the coordinates of obstacle's bounding box 
 			int xLowerBound = (*it)->getX();
 			int xUpperBound = xLowerBound + SPRITE_WIDTH - 1;
@@ -152,6 +152,10 @@ bool StudentWorld::overlapped(int x1, int y1, int x2, int y2) {
 		return false;
 }
 
+bool StudentWorld::completed() const {
+	return m_completed;
+}
+
 void StudentWorld::setCompleted() {
 	m_completed = true;
 }
@@ -170,10 +174,6 @@ string StudentWorld::stat() const {
 	return score.str() + stat.str();
 }
 
-bool StudentWorld::completed() const {
-	return m_completed;
-}
-
 string StudentWorld::level() {
 	ostringstream nLevel;
 	nLevel.setf(ios::fixed);
@@ -186,13 +186,13 @@ string StudentWorld::level() {
 	return level.str();
 }
 
-bool StudentWorld::foundSomething(Actor* me, Actor::ActorType type) {
+bool StudentWorld::foundSomething(Actor* me, bool (*f)(Actor*)) {
 	int x1 = me->getX();
 	int y1 = me->getY();
 	vector<Actor*>::iterator it;
 	it = m_actors.begin();
 	while (it != m_actors.end()) {
-		if ((*it)->getType() == type) {
+		if (f(*it)) {
 			int x2 = (*it)->getX();
 			int y2 = (*it)->getY();
 			if (overlapped(x1, y1, x2, y2))

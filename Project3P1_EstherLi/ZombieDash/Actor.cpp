@@ -8,8 +8,13 @@ Actor::Actor(int imageID, double startX, double startY, Direction startDirection
 	:GraphObject(imageID, startX, startY, startDirection, depth) {
 	m_world = world;
 	m_dead = false;
-	m_blockable = false;
-	m_person = false;
+	m_blocksMovement = false;
+	m_blocksFlame = false;
+	m_isPerson = false;
+	m_isExit = false;
+	m_isPit = false;
+	m_isFlame = false;
+	m_isVomit = false;
 }
 
 StudentWorld* Actor::world() const {
@@ -20,24 +25,64 @@ bool Actor::dead() const {
 	return m_dead;
 }
 
-bool Actor::blockable() const {
-	return m_blockable;
+bool Actor::blocksMovement(Actor *me) {
+	return me->m_blocksMovement;
 }
 
-bool Actor::isPerson() const {
-	return m_person;
+bool Actor::blocksFlame(Actor *me) {
+	return me->m_blocksFlame;
+}
+
+bool Actor::isPerson(Actor *me) {
+	return me->m_isPerson;
+}
+
+bool Actor::isExit(Actor *me) {
+	return me->m_isExit;
+}
+
+bool Actor::isPit(Actor *me) {
+	return me->m_isPit;
+}
+
+bool Actor::isFlame(Actor *me) {
+	return me->m_isFlame;
+}
+
+bool Actor::isVomit(Actor *me) {
+	return me->m_isVomit;
 }
 
 void Actor::setDead() {
 	m_dead = true;
 }
 
-void Actor::setBlockable() {
-	m_blockable = true;
+void Actor::setBlocksMovement() {
+	m_blocksMovement = true;
+}
+
+void Actor::setBlocksFlame() {
+	m_blocksFlame = true;
 }
 
 void Actor::setPerson() {
-	m_person = true;
+	m_isPerson = true;
+}
+
+void Actor::setExit() {
+	m_isExit = true;
+}
+
+void Actor::setPit() {
+	m_isPit = true;
+}
+
+void Actor::setFlame() {
+	m_isFlame = true;
+}
+
+void Actor::setVomit() {
+	m_isVomit = true;
 }
 
 //******************PENELOPE******************
@@ -50,10 +95,6 @@ Penelope::Penelope(StudentWorld* world, int startX, int startY)
 	m_infected = false;
 	m_nInfected = 0;
 	setPerson();
-}
-
-Actor::ActorType Penelope::getType() {
-	return t_penelope;
 }
 
 bool Penelope::infected() const {
@@ -100,22 +141,22 @@ void Penelope::doSomething() {
 			addInfect();
 	}
 	//encountered an exit
-	if (world()->foundSomething(this, t_exit))
+	if (world()->foundSomething(this, &isExit))
 		world()->setCompleted();
 	//encountered a pit
-	if (world()->foundSomething(this, t_pit)) {
+	if (world()->foundSomething(this, &isPit)) {
 		setDead();
 		world()->playSound(SOUND_PLAYER_DIE);
 		return;
 	}
 	//encountered a flame
-	if (world()->foundSomething(this, t_flame)) {
+	if (world()->foundSomething(this, &isFlame)) {
 		setDead();
 		world()->playSound(SOUND_PLAYER_DIE);
 		return;
 	}
 	//encountered zombie vomit
-	if (world()->foundSomething(this, t_vomit))
+	if (world()->foundSomething(this, &isVomit))
 		setInfect();
 
 	double x = getX();
@@ -126,23 +167,23 @@ void Penelope::doSomething() {
 		switch (ch) {
 		case KEY_PRESS_LEFT:
 			setDirection(left);
-			if (!world()->blocked(x - 4, y, t_wall))
+			if (!world()->blocked(x - 4, y, &blocksMovement))
 				moveTo(x - 4, y);
 			break;
 		case KEY_PRESS_RIGHT:
 			setDirection(right);
-			if (!world()->blocked(x + 4, y, t_wall))
+			if (!world()->blocked(x + 4, y, &blocksMovement))
 				moveTo(x + 4, y);
 			break;
 		case KEY_PRESS_UP:
 			setDirection(up);
-			if (!world()->blocked(x, y + 4, t_wall))
+			if (!world()->blocked(x, y + 4, &blocksMovement))
 				moveTo(x, y + 4);
 			break;
 		case KEY_PRESS_DOWN:
 			m_flamethrower = 3;
 			setDirection(down);
-			if (!world()->blocked(x, y - 4, t_wall))
+			if (!world()->blocked(x, y - 4, &blocksMovement))
 				moveTo(x, y - 4);
 			break;
 		case KEY_PRESS_SPACE:
@@ -182,7 +223,7 @@ void Penelope::createValidFlame(int x, int y, int dir) {
 			tempX = x - i * SPRITE_WIDTH;
 		else if (dir == right)
 			tempX = x + i * SPRITE_WIDTH;
-		if (world()->blocked(tempX, tempY, t_wall) || world()->blocked(tempX, tempY, t_exit))
+		if (world()->blocked(tempX, tempY, &Actor::blocksFlame))
 			break;
 		world()->createFlame(tempX, tempY, dir);
 	}
@@ -191,11 +232,8 @@ void Penelope::createValidFlame(int x, int y, int dir) {
 //******************WALL******************
 Wall::Wall(StudentWorld* world, int startX, int startY)
 	:Actor(IID_WALL, startX, startY, GraphObject::right, 0, world) {
-	setBlockable();
-}
-
-Actor::ActorType Wall::getType() {
-	return t_wall;
+	setBlocksMovement();
+	setBlocksFlame();
 }
 
 void Wall::doSomething() {
@@ -205,10 +243,8 @@ void Wall::doSomething() {
 //******************EXIT******************
 Exit::Exit(StudentWorld* world, int startX, int startY)
 	: Actor(IID_EXIT, startX, startY, GraphObject::right, 1, world) {
-}
-
-Actor::ActorType Exit::getType() {
-	return t_exit;
+	setExit();
+	setBlocksFlame();
 }
 
 void Exit::doSomething() {
@@ -218,10 +254,7 @@ void Exit::doSomething() {
 //******************PIT******************
 Pit::Pit(StudentWorld* world, int startX, int startY)
 	: Actor(IID_PIT, startX, startY, GraphObject::right, 0, world) {
-}
-
-Actor::ActorType Pit::getType() {
-	return t_pit;
+	setPit();
 }
 
 void Pit::doSomething() {
@@ -255,25 +288,20 @@ void TimedActor::addTicks() {
 //******************FLAME******************
 Flame::Flame(StudentWorld* world, int startX, int startY, int dir)
 	: TimedActor(world, startX, startY, dir, 0, IID_FLAME) {
-}
-
-Actor::ActorType Flame::getType() {
-	return t_flame;
+	setFlame();
 }
 
 //******************VOMIT******************
 Vomit::Vomit(StudentWorld* world, int startX, int startY, int dir)
 	: TimedActor(world, startX, startY, dir, 0, IID_VOMIT) {
-}
-
-Actor::ActorType Vomit::getType() {
-	return t_vomit;
+	setVomit();
 }
 
 //******************ZOMBIE******************
 Zombie::Zombie(StudentWorld* world, int startX, int startY) 
 : TimedActor(world, startX, startY, right, 0, IID_ZOMBIE) {
 	m_movementPlan = 0;
+	setBlocksMovement();
 }
 
 void Zombie::doSomething() {

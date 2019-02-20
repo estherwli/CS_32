@@ -8,35 +8,43 @@ class StudentWorld;
 
 class Actor : public GraphObject {
 public:
-
 	Actor(int imageID, double startX, double startY, Direction startDirection, int depth, StudentWorld* world);
 	virtual ~Actor() {} //DEFINE LATER??????
 
-	enum ActorType {
-		t_penelope, t_dumbZombie, t_smartZombie, t_citizen, t_landmine, 
-		t_pit, t_flame, t_vomit, t_vaccineGoodie, t_gasGoodie, t_landmineGoodie, t_wall, t_exit
-	};
-
 	//virtual functions
 	virtual void doSomething() = 0;
-	virtual ActorType getType() = 0;
 
 	//accessor functions
 	StudentWorld* world() const;
 	bool dead() const;
-	bool blockable() const;
-	bool isPerson() const;
+	static bool blocksMovement(Actor* me);
+	static bool blocksFlame(Actor* me);
+	static bool isPerson(Actor *me);
+	static bool isExit(Actor *me);
+	static bool isPit(Actor *me);
+	static bool isFlame(Actor *me);
+	static bool isVomit(Actor *me);
 
 	//mutator functions
 	void setDead();
-	void setBlockable();
+	void setBlocksMovement();
+	void setBlocksFlame();
 	void setPerson();
+	void setExit();
+	void setPit();
+	void setFlame();
+	void setVomit();
 
 private:
 	StudentWorld* m_world;
 	bool m_dead;
-	bool m_blockable;
-	bool m_person;
+	bool m_blocksMovement;
+	bool m_blocksFlame;
+	bool m_isPerson;
+	bool m_isExit;
+	bool m_isPit;
+	bool m_isFlame;
+	bool m_isVomit;
 };
 
 class Wall : public Actor {
@@ -44,7 +52,6 @@ public:
 	Wall(StudentWorld* world, int startX, int startY);
 	virtual ~Wall() {} //DEFINE LATER???????????
 	virtual void doSomething();
-	virtual ActorType getType();
 };
 
 class Penelope : public Actor {
@@ -52,7 +59,6 @@ public:
 	Penelope(StudentWorld* world, int startX, int startY);
 	virtual ~Penelope() {}; //DEFINE LATER!!!!!!!!!!!!!!!
 	virtual void doSomething();
-	virtual ActorType getType();
 	void createValidFlame(int x, int y, int dir);
 
 	//accessor functions
@@ -81,7 +87,6 @@ public:
 	Exit(StudentWorld* world, int startX, int startY);
 	virtual ~Exit() {} //define later?
 	virtual void doSomething();
-	virtual ActorType getType();
 };
 
 class Pit : public Actor {
@@ -89,15 +94,13 @@ public:
 	Pit(StudentWorld* world, int startX, int startY);
 	virtual ~Pit() {}
 	virtual void doSomething();
-	virtual ActorType getType();
 };
 
 class TimedActor : public Actor {
 public:
 	TimedActor(StudentWorld* world, int startX, int startY, int dir, int depth, int imageID);
-	virtual ~Projectile() {}
+	virtual ~TimedActor() {}
 	virtual void doSomething();
-	virtual ActorType getType() = 0;
 
 	//accessor function
 	int nTicks();
@@ -113,14 +116,12 @@ class Flame : public TimedActor {
 public:
 	Flame(StudentWorld* world, int startX, int startY, int dir);
 	virtual ~Flame() {}
-	virtual ActorType getType();
 };
 
 class Vomit : public TimedActor {
 public:
 	Vomit(StudentWorld* world, int startX, int startY, int dir);
 	virtual ~Vomit() {}
-	virtual ActorType getType();
 };
 
 class Zombie : public TimedActor {
@@ -128,11 +129,9 @@ public:
 	Zombie(StudentWorld* world, int startX, int startY);
 	virtual ~Zombie() {}
 	virtual void doSomething();
-	virtual ActorType getType() = 0;
 
 private:
 	int m_movementPlan;
-	int m_
 };
 
 #endif // ACTOR_H_

@@ -19,10 +19,10 @@ public:
     virtual void cleanUp();
 	
 	//helper functions
-	bool blocked(int x, int y, Actor::ActorType);
+	bool blocked(int x, int y, bool (*f)(Actor*));
 	bool overlapped(int x1, int y1, int x2, int y2);
 	std::string level();
-	bool foundSomething(Actor* me, Actor::ActorType type);
+	bool foundSomething(Actor* me, bool (*f)(Actor*));
 	void createFlame(int x, int y, int dir);
 	
 	//mutator functions
