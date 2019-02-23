@@ -19,17 +19,21 @@ public:
 	bool dead() const;
 	static bool blocksMovement(Actor* me);
 	static bool blocksFlame(Actor* me);
-	static bool isPerson(Actor *me);
-	static bool isExit(Actor *me);
-	static bool isPit(Actor *me);
-	static bool isFlame(Actor *me);
-	static bool isVomit(Actor *me);
+	static bool isPerson(Actor* me);
+	static bool isDumbZombie(Actor* me);
+	static bool isSmartZombie(Actor* me);
+	static bool isExit(Actor* me);
+	static bool isPit(Actor* me);
+	static bool isFlame(Actor* me);
+	static bool isVomit(Actor* me);
 
 	//mutator functions
 	void setDead();
 	void setBlocksMovement();
 	void setBlocksFlame();
 	void setPerson();
+	void setDumbZombie();
+	void setSmartZombie();
 	void setExit();
 	void setPit();
 	void setFlame();
@@ -41,6 +45,8 @@ private:
 	bool m_blocksMovement;
 	bool m_blocksFlame;
 	bool m_isPerson;
+	bool m_isDumbZombie;
+	bool m_isSmartZombie;
 	bool m_isExit;
 	bool m_isPit;
 	bool m_isFlame;
@@ -59,7 +65,6 @@ public:
 	Penelope(StudentWorld* world, int startX, int startY);
 	virtual ~Penelope() {}; //DEFINE LATER!!!!!!!!!!!!!!!
 	virtual void doSomething();
-	void createValidFlame(int x, int y, int dir);
 
 	//accessor functions
 	bool infected() const;
@@ -130,8 +135,28 @@ public:
 	virtual ~Zombie() {}
 	virtual void doSomething();
 
+	//helper functions
+	void checkVomit(Actor* me); //helper function to check if Zombie should vomit
+	void tryToMove(Zombie* me, int deltaX, int deltaY);
+
+	//mutator functions
+	void setMovementPlan(int i);
+	void decreaseMovementPlan();
+
+	//accessor functions
+	int movementPlan();
+
 private:
 	int m_movementPlan;
+};
+
+class DumbZombie : public Zombie {
+public:
+	DumbZombie(StudentWorld* world, int startX, int startY);
+	virtual ~DumbZombie() {}
+	virtual void doSomething();
+private:
+	bool m_hasVaccine;
 };
 
 #endif // ACTOR_H_

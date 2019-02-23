@@ -1,5 +1,6 @@
 #include "StudentWorld.h"
 #include "GameConstants.h"
+#include "GraphObject.h"
 #include "Actor.h"
 #include "Level.h"
 #include <string>
@@ -46,12 +47,16 @@ int StudentWorld::init()
 					break;
 				case Level::player:
 					m_player = new Penelope(this, (SPRITE_WIDTH * level_x), (SPRITE_HEIGHT * level_y));
+					m_actors.push_back(m_player);
 					break;
 				case Level::exit:
 					m_actors.push_back(new Exit(this, (SPRITE_WIDTH * level_x), (SPRITE_HEIGHT * level_y)));
 					break;
 				case Level::pit:
 					m_actors.push_back(new Pit(this, (SPRITE_WIDTH * level_x), (SPRITE_HEIGHT * level_y)));
+					break;
+				case Level::dumb_zombie:
+					m_actors.push_back(new DumbZombie(this, (SPRITE_WIDTH * level_x), (SPRITE_HEIGHT * level_y)));
 					break;
 				}
 			}
@@ -94,8 +99,6 @@ int StudentWorld::move()
 
 void StudentWorld::cleanUp()
 {
-	if (m_player != nullptr) //ensures consecutive calls to cleanUp won't have undefined behavior
-		delete m_player;
 	for (int i = m_actors.size() - 1; i >= 0; i--) {
 		if (m_actors[i] != nullptr) {
 			delete m_actors[i];
@@ -104,8 +107,11 @@ void StudentWorld::cleanUp()
 	}
 }
 
-bool StudentWorld::blocked(int x, int y, bool (*f)(Actor*)) { //parameters are coordinates of destination and the specific blocking
-
+//parameters:
+//coordinates of destination 
+//an actor property (ex. blocksMovement)
+//the actor trying to move to said destination 
+bool StudentWorld::hasProperty(int x, int y, bool(*f)(Actor*), Actor *me) { 
 	//gets the coordinates of person's bounding box 
 	int x2 = x + SPRITE_WIDTH - 1;
 	int y2 = y + SPRITE_HEIGHT - 1;
@@ -113,13 +119,13 @@ bool StudentWorld::blocked(int x, int y, bool (*f)(Actor*)) { //parameters are c
 	vector<Actor*>::iterator it;
 	it = m_actors.begin();
 	while (it != m_actors.end()) {
-		if (f(*it)) {
+		if (*it != me && f(*it)) {
 			//gets the coordinates of obstacle's bounding box 
 			int xLowerBound = (*it)->getX();
 			int xUpperBound = xLowerBound + SPRITE_WIDTH - 1;
 			int yLowerBound = (*it)->getY();
 			int yUpperBound = yLowerBound + SPRITE_HEIGHT - 1;
-			//checks if any part of person's bounding box will intersect with an obstacle's bounding box
+			//checks if any part of our bounding box will intersect with the object of interest's bounding box
 			if (x <= xUpperBound && x >= xLowerBound && y <= yUpperBound && y >= yLowerBound) //checks lower left corner
 				return true;
 			else if (x2 <= xUpperBound && x2 >= xLowerBound && y2 <= yUpperBound && y2 >= yLowerBound) //checks upper right corner
@@ -131,7 +137,7 @@ bool StudentWorld::blocked(int x, int y, bool (*f)(Actor*)) { //parameters are c
 		}
 		it++;
 	}
-	return false; //person's bounding box does not intersect with an obstacle's bounding box
+	return false; //our bounding box does not intersect with any object of interest's bounding box
 }
 
 bool StudentWorld::overlapped(int x1, int y1, int x2, int y2) {
@@ -179,16 +185,16 @@ string StudentWorld::level() {
 	nLevel.setf(ios::fixed);
 	nLevel.fill('0');
 	nLevel << setw(2) << getLevel();
-	
+
 	ostringstream level;
 	level.setf(ios::fixed);
 	level << "level" << nLevel.str() << ".txt";
 	return level.str();
 }
 
-bool StudentWorld::foundSomething(Actor* me, bool (*f)(Actor*)) {
-	int x1 = me->getX();
-	int y1 = me->getY();
+bool StudentWorld::foundSomething(int x1, int y1, bool(*f)(Actor*)) {
+	if (x1 < 0 || x1 > VIEW_WIDTH || y1 < 0 || y1 > VIEW_HEIGHT)
+		return false;
 	vector<Actor*>::iterator it;
 	it = m_actors.begin();
 	while (it != m_actors.end()) {
@@ -203,8 +209,31 @@ bool StudentWorld::foundSomething(Actor* me, bool (*f)(Actor*)) {
 	return false;
 }
 
-void StudentWorld::createFlame(int x, int y, int dir) {
-	m_actors.push_back(new Flame(this, x, y, dir));
+void StudentWorld::createValidProjectile(int x, int y, int dir, int amount, bool(*check)(Actor*), string projectileType) {
+	int tempX = x;
+	int tempY = y;
+	for (int i = 1; i < amount + 1; i++) {
+		if (dir == GraphObject::up)
+			tempY = y + i * SPRITE_HEIGHT;
+		else if (dir == GraphObject::down)
+			tempY = y - i * SPRITE_HEIGHT;
+		else if (dir == GraphObject::left)
+			tempX = x - i * SPRITE_WIDTH;
+		else if (dir == GraphObject::right)
+			tempX = x + i * SPRITE_WIDTH;
+		if (projectileType == "flame") {
+			if (hasProperty(tempX, tempY, check)) //blocksFlame is the property
+				return;
+			m_actors.push_back(new Flame(this, tempX, tempY, dir));
+		}
+		else if (projectileType == "vomit") {
+			if (hasProperty(tempX, tempY, check)) { //isPerson is the property
+				m_actors.push_back(new Vomit(this, tempX, tempY, dir));
+				playSound(SOUND_ZOMBIE_VOMIT);
+				return;
+			}
+		}
+	}
 }
 
 

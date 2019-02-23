@@ -6,15 +6,21 @@ using namespace std;
 
 Actor::Actor(int imageID, double startX, double startY, Direction startDirection, int depth, StudentWorld* world)
 	:GraphObject(imageID, startX, startY, startDirection, depth) {
-	m_world = world;
-	m_dead = false;
-	m_blocksMovement = false;
-	m_blocksFlame = false;
-	m_isPerson = false;
-	m_isExit = false;
-	m_isPit = false;
-	m_isFlame = false;
-	m_isVomit = false;
+	if (startX < 0 || startX > VIEW_WIDTH - 1 || startY < 0 || startY > VIEW_HEIGHT - 1)
+		cerr << "Invalid starting position.";
+	else {
+		m_world = world;
+		m_dead = false;
+		m_blocksMovement = false;
+		m_blocksFlame = false;
+		m_isPerson = false;
+		m_isDumbZombie = false;
+		m_isSmartZombie = false;
+		m_isExit = false;
+		m_isPit = false;
+		m_isFlame = false;
+		m_isVomit = false;
+	}
 }
 
 StudentWorld* Actor::world() const {
@@ -35,6 +41,14 @@ bool Actor::blocksFlame(Actor *me) {
 
 bool Actor::isPerson(Actor *me) {
 	return me->m_isPerson;
+}
+
+bool Actor::isDumbZombie(Actor *me) {
+	return me->m_isDumbZombie;
+}
+
+bool Actor::isSmartZombie(Actor *me) {
+	return me->m_isSmartZombie;
 }
 
 bool Actor::isExit(Actor *me) {
@@ -69,6 +83,14 @@ void Actor::setPerson() {
 	m_isPerson = true;
 }
 
+void Actor::setDumbZombie() {
+	m_isDumbZombie = true;
+}
+
+void Actor::setSmartZombie() {
+	m_isSmartZombie = true;
+}
+
 void Actor::setExit() {
 	m_isExit = true;
 }
@@ -95,6 +117,7 @@ Penelope::Penelope(StudentWorld* world, int startX, int startY)
 	m_infected = false;
 	m_nInfected = 0;
 	setPerson();
+	setBlocksMovement();
 }
 
 bool Penelope::infected() const {
@@ -141,22 +164,22 @@ void Penelope::doSomething() {
 			addInfect();
 	}
 	//encountered an exit
-	if (world()->foundSomething(this, &isExit))
+	if (world()->foundSomething(getX(), getY(), &isExit))
 		world()->setCompleted();
 	//encountered a pit
-	if (world()->foundSomething(this, &isPit)) {
+	if (world()->foundSomething(getX(), getY(), &isPit)) {
 		setDead();
 		world()->playSound(SOUND_PLAYER_DIE);
 		return;
 	}
 	//encountered a flame
-	if (world()->foundSomething(this, &isFlame)) {
+	if (world()->foundSomething(getX(), getY(), &isFlame)) {
 		setDead();
 		world()->playSound(SOUND_PLAYER_DIE);
 		return;
 	}
 	//encountered zombie vomit
-	if (world()->foundSomething(this, &isVomit))
+	if (world()->foundSomething(getX(), getY(), &isVomit))
 		setInfect();
 
 	double x = getX();
@@ -167,23 +190,23 @@ void Penelope::doSomething() {
 		switch (ch) {
 		case KEY_PRESS_LEFT:
 			setDirection(left);
-			if (!world()->blocked(x - 4, y, &blocksMovement))
+			if (!world()->hasProperty(x - 4, y, &blocksMovement, this))
 				moveTo(x - 4, y);
 			break;
 		case KEY_PRESS_RIGHT:
 			setDirection(right);
-			if (!world()->blocked(x + 4, y, &blocksMovement))
+			if (!world()->hasProperty(x + 4, y, &blocksMovement, this))
 				moveTo(x + 4, y);
 			break;
 		case KEY_PRESS_UP:
 			setDirection(up);
-			if (!world()->blocked(x, y + 4, &blocksMovement))
+			if (!world()->hasProperty(x, y + 4, &blocksMovement, this))
 				moveTo(x, y + 4);
 			break;
 		case KEY_PRESS_DOWN:
 			m_flamethrower = 3;
 			setDirection(down);
-			if (!world()->blocked(x, y - 4, &blocksMovement))
+			if (!world()->hasProperty(x, y - 4, &blocksMovement, this))
 				moveTo(x, y - 4);
 			break;
 		case KEY_PRESS_SPACE:
@@ -192,41 +215,23 @@ void Penelope::doSomething() {
 				world()->playSound(SOUND_PLAYER_FIRE);
 				switch (dir) {
 				case up:
-					createValidFlame(x, y, up);
+					world()->createValidProjectile(x, y, up, 3, &blocksFlame, "flame");
 					break;
 				case down:
-					createValidFlame(x, y, down);
+					world()->createValidProjectile(x, y, down, 3, &blocksFlame, "flame");
 					break;
 				case left:
-					createValidFlame(x, y, left);
+					world()->createValidProjectile(x, y, left, 3, &blocksFlame, "flame");
 					break;
 				case right:
-					createValidFlame(x, y, right);
+					world()->createValidProjectile(x, y, right, 3, &blocksFlame, "flame");
 					break;
 				}
-				break;
 			}
+			break;
 		}
 	}
 	return;
-}
-
-void Penelope::createValidFlame(int x, int y, int dir) {
-	int tempX = x;
-	int tempY = y;
-	for (int i = 1; i < 4; i++) {
-		if (dir == up)
-			tempY = y + i * SPRITE_HEIGHT;
-		else if (dir == down)
-			tempY = y - i * SPRITE_HEIGHT;
-		else if (dir == left)
-			tempX = x - i * SPRITE_WIDTH;
-		else if (dir == right)
-			tempX = x + i * SPRITE_WIDTH;
-		if (world()->blocked(tempX, tempY, &Actor::blocksFlame))
-			break;
-		world()->createFlame(tempX, tempY, dir);
-	}
 }
 
 //******************WALL******************
@@ -291,6 +296,7 @@ Flame::Flame(StudentWorld* world, int startX, int startY, int dir)
 	setFlame();
 }
 
+
 //******************VOMIT******************
 Vomit::Vomit(StudentWorld* world, int startX, int startY, int dir)
 	: TimedActor(world, startX, startY, dir, 0, IID_VOMIT) {
@@ -298,17 +304,133 @@ Vomit::Vomit(StudentWorld* world, int startX, int startY, int dir)
 }
 
 //******************ZOMBIE******************
-Zombie::Zombie(StudentWorld* world, int startX, int startY) 
-: TimedActor(world, startX, startY, right, 0, IID_ZOMBIE) {
+Zombie::Zombie(StudentWorld* world, int startX, int startY)
+	: TimedActor(world, startX, startY, right, 0, IID_ZOMBIE) {
 	m_movementPlan = 0;
 	setBlocksMovement();
+}
+
+int Zombie::movementPlan() {
+	return m_movementPlan;
+}
+
+void Zombie::setMovementPlan(int i) {
+	m_movementPlan = i;
+}
+
+void Zombie::decreaseMovementPlan() {
+	m_movementPlan--;
 }
 
 void Zombie::doSomething() {
 	if (dead())
 		return;
+	addTicks();
+	if (nTicks() % 2 == 0) //do nothing every other tick
+		return;
 
+	//if zombie is not dead or idle during this tick
+	checkVomit(this);
+	if (movementPlan() == 0) {
+		setMovementPlan(randInt(3, 10));
+		int randomDir = randInt(1, 4);
+		switch (randomDir) {
+		case 1:
+			setDirection(up);
+			break;
+		case 2:
+			setDirection(down);
+			break;
+		case 3:
+			setDirection(left);
+			break;
+		case 4:
+			setDirection(right);
+			break;
+		}
+	}
+	int dir = getDirection();
+	switch (dir) {
+	case up:
+		tryToMove(this, 0, 1);
+		break;
+	case down:
+		tryToMove(this, 0, -1);
+		break;
+	case left:
+		tryToMove(this, -1, 0);
+		break;
+	case right:
+		tryToMove(this, 1, 0);
+		break;
+	}
 }
+
+void Zombie::tryToMove(Zombie* me, int deltaX, int deltaY) {
+	int x = me->getX();
+	int y = me->getY();
+	if (!world()->hasProperty(x + deltaX, y + deltaY, &blocksMovement, me)) {
+		me->moveTo(x + deltaX, y + deltaY);
+		me->decreaseMovementPlan();
+	}
+	else
+		me->setMovementPlan(0);
+}
+
+void Zombie::checkVomit(Actor* me) {
+	int dir = me->getDirection();
+	int tempX = me->getX();
+	int tempY = me->getY();
+	switch (dir) { //computes potential coordinates for vomit
+	case up:
+		tempY += SPRITE_HEIGHT;
+		break;
+	case down:
+		tempY -= SPRITE_HEIGHT;
+		break;
+	case left:
+		tempX -= SPRITE_WIDTH;
+		break;
+	case right:
+		tempX += SPRITE_WIDTH;
+		break;
+	}
+	if (world()->foundSomething(tempX, tempY, &isPerson)) { //if vomit will be close enough to a person
+		int num = randInt(1, 3);
+		if (num == 1) { //zombie will vomit 1/3 of the time
+			world()->createValidProjectile(getX(), getY(), dir, 1, &isPerson, "vomit");
+			return;
+		}
+	}
+}
+
+//******************DUMBZOMBIE******************
+DumbZombie::DumbZombie(StudentWorld* world, int startX, int startY)
+	: Zombie(world, startX, startY) {
+	setDumbZombie();
+	m_hasVaccine = false;
+	int num = (randInt(1, 10));
+	if (num == 1)
+		m_hasVaccine = true; //1 out of 10 zombies carry a vaccine
+}
+
+void DumbZombie::doSomething() {
+	Zombie::doSomething();
+	if (world()->foundSomething(getX(), getY(), &isFlame)) {
+		setDead();
+		world()->playSound(SOUND_ZOMBIE_DIE);
+		world()->increaseScore(1000);
+	}
+	return;
+}
+
+
+//ADD THIS ONCE VACCINE HAS BEEN CODED!!!!!!!!!!!!!!!!!!
+//DumbZombie::~DumbZombie() {
+//	if (m_hasVaccine)
+//		world()->createVaccine();
+//}
+
 
 
 
