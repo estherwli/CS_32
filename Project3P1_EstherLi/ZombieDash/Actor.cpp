@@ -14,12 +14,18 @@ Actor::Actor(int imageID, double startX, double startY, Direction startDirection
 		m_blocksMovement = false;
 		m_blocksFlame = false;
 		m_isPerson = false;
+		m_isPenelope = false;
 		m_isDumbZombie = false;
 		m_isSmartZombie = false;
 		m_isExit = false;
 		m_isPit = false;
+		m_isGoodie = false;
+		m_isVaccineGoodie = false;
+		m_isGasCanGoodie = false;
+		m_isLandmineGoodie = false;
 		m_isFlame = false;
 		m_isVomit = false;
+		m_isLandmine = false;
 	}
 }
 
@@ -43,6 +49,10 @@ bool Actor::isPerson(Actor *me) {
 	return me->m_isPerson;
 }
 
+bool Actor::isPenelope(Actor *me) {
+	return me->m_isPenelope;
+}
+
 bool Actor::isDumbZombie(Actor *me) {
 	return me->m_isDumbZombie;
 }
@@ -59,12 +69,32 @@ bool Actor::isPit(Actor *me) {
 	return me->m_isPit;
 }
 
+bool Actor::isGoodie(Actor *me) {
+	return me->m_isGoodie;
+}
+
+bool Actor::isVaccineGoodie(Actor *me) {
+	return me->m_isVaccineGoodie;
+}
+
+bool Actor::isGasCanGoodie(Actor* me) {
+	return me->m_isGasCanGoodie;
+}
+
+bool Actor::isLandmineGoodie(Actor* me) {
+	return me->m_isLandmineGoodie;
+}
+
 bool Actor::isFlame(Actor *me) {
 	return me->m_isFlame;
 }
 
 bool Actor::isVomit(Actor *me) {
 	return me->m_isVomit;
+}
+
+bool Actor::isLandmine(Actor *me) {
+	return me->m_isLandmine;
 }
 
 void Actor::setDead() {
@@ -83,6 +113,10 @@ void Actor::setPerson() {
 	m_isPerson = true;
 }
 
+void Actor::setPenelope() {
+	m_isPenelope = true;
+}
+
 void Actor::setDumbZombie() {
 	m_isDumbZombie = true;
 }
@@ -99,6 +133,22 @@ void Actor::setPit() {
 	m_isPit = true;
 }
 
+void Actor::setGoodie() {
+	m_isGoodie = true;
+}
+
+void Actor::setVaccineGoodie() {
+	m_isVaccineGoodie = true;
+}
+
+void Actor::setGasCanGoodie() {
+	m_isGasCanGoodie = true;
+}
+
+void Actor::setLandmineGoodie() {
+	m_isLandmineGoodie = true;
+}
+
 void Actor::setFlame() {
 	m_isFlame = true;
 }
@@ -107,16 +157,21 @@ void Actor::setVomit() {
 	m_isVomit = true;
 }
 
+void Actor::setLandmine() {
+	m_isLandmine = true;
+}
+
 //******************PENELOPE******************
 Penelope::Penelope(StudentWorld* world, int startX, int startY)
 	: Actor(IID_PLAYER, startX, startY, GraphObject::right, 0, world) {
 	m_lives = 3;
 	m_landmine = 0;
 	m_flamethrower = 0;
-	m_vaccine = 0;
+	m_nVaccine = 0;
 	m_infected = false;
 	m_nInfected = 0;
 	setPerson();
+	setPenelope();
 	setBlocksMovement();
 }
 
@@ -140,11 +195,23 @@ int Penelope::flamethrower() const {
 	return m_flamethrower;
 }
 int Penelope::vaccine() const {
-	return m_vaccine;
+	return m_nVaccine;
+}
+
+void Penelope::addVaccine() {
+	m_nVaccine++;
 }
 
 void Penelope::addInfect() {
 	m_nInfected++;
+}
+
+void Penelope::addFlamethrower() {
+	m_flamethrower += 5;
+}
+
+void Penelope::addLandmine() {
+	m_landmine += 2;
 }
 
 void Penelope::setInfect() {
@@ -163,28 +230,44 @@ void Penelope::doSomething() {
 		else
 			addInfect();
 	}
+
+
+	double x = getX();
+	double y = getY();
+	int dir = getDirection();
+
 	//encountered an exit
-	if (world()->foundSomething(getX(), getY(), &isExit))
+	if (world()->foundSomething(x, y, &isExit))
 		world()->setCompleted();
 	//encountered a pit
-	if (world()->foundSomething(getX(), getY(), &isPit)) {
+	if (world()->foundSomething(x, y, &isPit)) {
 		setDead();
 		world()->playSound(SOUND_PLAYER_DIE);
 		return;
 	}
 	//encountered a flame
-	if (world()->foundSomething(getX(), getY(), &isFlame)) {
+	if (world()->foundSomething(x, y, &isFlame)) {
 		setDead();
 		world()->playSound(SOUND_PLAYER_DIE);
 		return;
 	}
 	//encountered zombie vomit
-	if (world()->foundSomething(getX(), getY(), &isVomit))
+	if (world()->foundSomething(x, y, &isVomit))
 		setInfect();
 
-	double x = getX();
-	double y = getY();
-	int dir = getDirection();
+	//encountered a vaccine goodie
+	if (world()->foundSomething(x, y, &isVaccineGoodie))
+		addVaccine();
+
+	//encountered a gas can goodie
+	if (world()->foundSomething(x, y, &isGasCanGoodie))
+		addFlamethrower();
+
+	//encountered a landmine goodie
+	if (world()->foundSomething(x, y, &isLandmineGoodie))
+		addLandmine();
+
+
 	int ch;
 	if (world()->getKey(ch)) {
 		switch (ch) {
@@ -209,22 +292,33 @@ void Penelope::doSomething() {
 			if (!world()->hasProperty(x, y - 4, &blocksMovement, this))
 				moveTo(x, y - 4);
 			break;
+		case KEY_PRESS_TAB:
+			if (landmine() >= 1) {
+				world()->createValidObject(x - SPRITE_WIDTH, y, right, 1, &blocksMovement, "landmine");
+			}
+		case KEY_PRESS_ENTER:
+			if (vaccine() >= 1) {
+				m_infected = false;
+				m_nInfected = 0;
+				m_nVaccine--;
+			}
+			break;
 		case KEY_PRESS_SPACE:
 			if (flamethrower() >= 1) {
 				m_flamethrower--;
 				world()->playSound(SOUND_PLAYER_FIRE);
 				switch (dir) {
 				case up:
-					world()->createValidProjectile(x, y, up, 3, &blocksFlame, "flame");
+					world()->createValidObject(x, y, up, 3, &blocksFlame, "flame");
 					break;
 				case down:
-					world()->createValidProjectile(x, y, down, 3, &blocksFlame, "flame");
+					world()->createValidObject(x, y, down, 3, &blocksFlame, "flame");
 					break;
 				case left:
-					world()->createValidProjectile(x, y, left, 3, &blocksFlame, "flame");
+					world()->createValidObject(x, y, left, 3, &blocksFlame, "flame");
 					break;
 				case right:
-					world()->createValidProjectile(x, y, right, 3, &blocksFlame, "flame");
+					world()->createValidObject(x, y, right, 3, &blocksFlame, "flame");
 					break;
 				}
 			}
@@ -266,9 +360,53 @@ void Pit::doSomething() {
 	return;
 }
 
+
+//******************LANDMINE******************
+Landmine::Landmine(StudentWorld* world, int startX, int startY)
+	:Actor(IID_LANDMINE, startX, startY, right, 1, world) {
+	setLandmine();
+	m_active = false;
+	m_nSafetyTicks = 30;
+}
+
+void Landmine::doSomething() {
+	if (dead())
+		return;
+	int x = getX();
+	int y = getY();
+	if (world()->foundSomething(x, y, &isFlame))
+		m_active = true;
+	if (!m_active) {
+		if (m_nSafetyTicks != 0)
+			m_nSafetyTicks--;
+		if (m_nSafetyTicks == 0) {
+			m_active = true;
+			return;
+		}
+	}
+	if (m_active) {
+		setDead();
+		world()->playSound(SOUND_LANDMINE_EXPLODE);
+		int xLeft = getX() - SPRITE_WIDTH;
+		int xRight = getX() + SPRITE_WIDTH;
+		int yLower = getY() - SPRITE_HEIGHT;
+		world()->createValidObject(x, yLower, up, 1, &blocksFlame, "flame");
+		world()->createValidObject(x, yLower, up, 1, &blocksFlame, "pit");
+		world()->createValidObject(x, y, up, 1, &blocksFlame, "flame");
+		world()->createValidObject(x, y, down, 1, &blocksFlame, "flame");
+		world()->createValidObject(x, y, left, 1, &blocksFlame, "flame");
+		world()->createValidObject(x, y, right, 1, &blocksFlame, "flame");
+		world()->createValidObject(xLeft, y, up, 1, &blocksFlame, "flame");
+		world()->createValidObject(xLeft, y, down, 1, &blocksFlame, "flame");
+		world()->createValidObject(xRight, y, up, 1, &blocksFlame, "flame");
+		world()->createValidObject(xRight, y, down, 1, &blocksFlame, "flame");
+	}
+}
+
+
 //******************TIMEDACTOR******************
 TimedActor::TimedActor(StudentWorld* world, int startX, int startY, int dir, int depth, int imageID)
-	:Actor(imageID, startX, startY, dir, depth, world) {
+	: Actor(imageID, startX, startY, dir, depth, world) {
 	m_nTicks = 0;
 }
 
@@ -290,12 +428,47 @@ void TimedActor::addTicks() {
 	m_nTicks++;
 }
 
+//******************GOODIE******************
+Goodie::Goodie(StudentWorld* world, int startX, int startY, int imageID)
+	:Actor(imageID, startX, startY, right, 1, world) {
+	setGoodie();
+}
+
+void Goodie::doSomething() {
+	if (dead())
+		return;
+	if (world()->foundSomething(getX(), getY(), &isPenelope)) {
+		world()->increaseScore(50);
+		setDead();
+		world()->playSound(SOUND_GOT_GOODIE);
+	}
+	if (world()->foundSomething(getX(), getY(), &isFlame))
+		setDead();
+}
+
+//******************VACCINEGOODIE******************
+VaccineGoodie::VaccineGoodie(StudentWorld* world, int startX, int startY)
+	: Goodie(world, startX, startY, IID_VACCINE_GOODIE) {
+	setVaccineGoodie();
+}
+
+//******************GASCANGOODIE******************
+GasCanGoodie::GasCanGoodie(StudentWorld* world, int startX, int startY)
+	: Goodie(world, startX, startY, IID_GAS_CAN_GOODIE) {
+	setGasCanGoodie();
+}
+
+//******************LANDMINEGOODIE******************
+LandmineGoodie::LandmineGoodie(StudentWorld* world, int startX, int startY)
+	: Goodie(world, startX, startY, IID_LANDMINE_GOODIE) {
+	setLandmineGoodie();
+}
+
 //******************FLAME******************
 Flame::Flame(StudentWorld* world, int startX, int startY, int dir)
 	: TimedActor(world, startX, startY, dir, 0, IID_FLAME) {
 	setFlame();
 }
-
 
 //******************VOMIT******************
 Vomit::Vomit(StudentWorld* world, int startX, int startY, int dir)
@@ -398,7 +571,7 @@ void Zombie::checkVomit(Actor* me) {
 	if (world()->foundSomething(tempX, tempY, &isPerson)) { //if vomit will be close enough to a person
 		int num = randInt(1, 3);
 		if (num == 1) { //zombie will vomit 1/3 of the time
-			world()->createValidProjectile(getX(), getY(), dir, 1, &isPerson, "vomit");
+			world()->createValidObject(getX(), getY(), dir, 1, &isPerson, "vomit");
 			return;
 		}
 	}
@@ -413,6 +586,12 @@ DumbZombie::DumbZombie(StudentWorld* world, int startX, int startY)
 	if (num == 1)
 		m_hasVaccine = true; //1 out of 10 zombies carry a vaccine
 }
+
+//IMPLEMET DROP VACCINE LATER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//DumbZombie::~DumbZombie() {
+//	if (m_hasVaccine)
+//		//
+//}
 
 void DumbZombie::doSomething() {
 	Zombie::doSomething();

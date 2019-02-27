@@ -31,11 +31,10 @@ int StudentWorld::init()
 	string levelFile = level();
 	Level::LoadResult result = lev.loadLevel(levelFile);
 	if (result == Level::load_fail_file_not_found)
-		cerr << "Cannot find " << levelFile << " data file" << endl;
+		return GWSTATUS_PLAYER_WON;
 	else if (result == Level::load_fail_bad_format)
-		cerr << "Your level was improperly formatted" << endl;
+		return GWSTATUS_LEVEL_ERROR;
 	else if (result == Level::load_success) {
-		cerr << "Successfully loaded level" << endl;
 		for (int i = 0; i < LEVEL_HEIGHT; i++) {
 			for (int j = 0; j < LEVEL_WIDTH; j++) {
 				int level_x = j;
@@ -45,6 +44,9 @@ int StudentWorld::init()
 				case Level::wall:
 					m_actors.push_back(new Wall(this, (SPRITE_WIDTH * level_x), (SPRITE_HEIGHT * level_y)));
 					break;
+				case Level::pit:
+					m_actors.push_back(new Pit(this, (SPRITE_WIDTH * level_x), (SPRITE_HEIGHT * level_y)));
+					break;
 				case Level::player:
 					m_player = new Penelope(this, (SPRITE_WIDTH * level_x), (SPRITE_HEIGHT * level_y));
 					m_actors.push_back(m_player);
@@ -52,18 +54,23 @@ int StudentWorld::init()
 				case Level::exit:
 					m_actors.push_back(new Exit(this, (SPRITE_WIDTH * level_x), (SPRITE_HEIGHT * level_y)));
 					break;
-				case Level::pit:
-					m_actors.push_back(new Pit(this, (SPRITE_WIDTH * level_x), (SPRITE_HEIGHT * level_y)));
-					break;
 				case Level::dumb_zombie:
 					m_actors.push_back(new DumbZombie(this, (SPRITE_WIDTH * level_x), (SPRITE_HEIGHT * level_y)));
+					break;
+				case Level::vaccine_goodie:
+					m_actors.push_back(new VaccineGoodie(this, (SPRITE_WIDTH * level_x), (SPRITE_HEIGHT * level_y)));
+					break;
+				case Level::gas_can_goodie:
+					m_actors.push_back(new GasCanGoodie(this, (SPRITE_WIDTH * level_x), (SPRITE_HEIGHT * level_y)));
+					break;
+				case Level::landmine_goodie:
+					m_actors.push_back(new LandmineGoodie(this, (SPRITE_WIDTH * level_x), (SPRITE_HEIGHT * level_y)));
 					break;
 				}
 			}
 		}
-
 	}
-	return GWSTATUS_PLAYER_DIED;
+	return GWSTATUS_CONTINUE_GAME;
 }
 
 int StudentWorld::move()
@@ -111,7 +118,7 @@ void StudentWorld::cleanUp()
 //coordinates of destination 
 //an actor property (ex. blocksMovement)
 //the actor trying to move to said destination 
-bool StudentWorld::hasProperty(int x, int y, bool(*f)(Actor*), Actor *me) { 
+bool StudentWorld::hasProperty(int x, int y, bool(*f)(Actor*), Actor *me) {
 	//gets the coordinates of person's bounding box 
 	int x2 = x + SPRITE_WIDTH - 1;
 	int y2 = y + SPRITE_HEIGHT - 1;
@@ -174,7 +181,7 @@ string StudentWorld::stat() const {
 
 	ostringstream stat;
 	stat.setf(ios::fixed);
-	stat << "  Level: " << getLevel() << "  Lives: " << m_player->lives() << "  Vacc: " << m_player->vaccine()
+	stat << "  Level: " << getLevel() << "  Lives: " << m_player->lives() << "  Vaccines: " << m_player->vaccine()
 		<< "  Flames: " << m_player->flamethrower() << "  Mines: " << m_player->landmine() << "  Infected: " << m_player->nInfected();
 
 	return score.str() + stat.str();
@@ -209,7 +216,7 @@ bool StudentWorld::foundSomething(int x1, int y1, bool(*f)(Actor*)) {
 	return false;
 }
 
-void StudentWorld::createValidProjectile(int x, int y, int dir, int amount, bool(*check)(Actor*), string projectileType) {
+void StudentWorld::createValidObject(int x, int y, int dir, int amount, bool(*check)(Actor*), string projectileType) {
 	int tempX = x;
 	int tempY = y;
 	for (int i = 1; i < amount + 1; i++) {
@@ -233,8 +240,17 @@ void StudentWorld::createValidProjectile(int x, int y, int dir, int amount, bool
 				return;
 			}
 		}
+		else if (projectileType == "landmine") {
+			m_actors.push_back(new Landmine(this, tempX, tempY));
+			return;
+		}
+		else if (projectileType == "pit") {
+			m_actors.push_back(new Pit(this, tempX, tempY));
+			return;
+		}
 	}
 }
+
 
 
 

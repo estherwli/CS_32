@@ -347,11 +347,28 @@ void test_spec()
 	cout << "Passed all tests in test_spec()" << endl;
 }
 
+void test4() {
+	Set trues;
+	Set falses;
+	char trueVal[5] = { 'a', 'e', 'i', 'o', 'u' };
+	char falseVal[4] = { 'b', 'g', 'k', 'p' };
+	for (unsigned k = 0; k < 5; k++)
+		trues.insert(trueVal[k]);
+	for (unsigned k = 0; k < 4; k++)
+		falses.insert(falseVal[k]);
+	string pf;
+	bool answer;
+	evaluate("e&!(b|o&i|k)|!!!(p&e&g)", trues, falses, pf, answer);
+	cout << pf << endl;
+	cout << answer;
+}
+
 int main()
 {
-	test1();
-	test2();
-	test3();
-	test_spec();
+	//test1();
+	//test2();
+	//test3();
+	//test_spec();
+	test4();
 }
 

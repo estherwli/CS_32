@@ -22,8 +22,8 @@ public:
 	bool hasProperty(int x, int y, bool (*f)(Actor*), Actor* me = nullptr);
 	bool overlapped(int x1, int y1, int x2, int y2);
 	std::string level();
-	bool foundSomething(int x1, int x2, bool (*f)(Actor*));
-	void createValidProjectile(int x, int y, int dir, int amount, bool(*check)(Actor*), std::string projectileType);
+	bool foundSomething(int x1, int y1, bool (*f)(Actor*));
+	void createValidObject(int x, int y, int dir, int amount, bool(*check)(Actor*), std::string projectileType);
 
 	//mutator functions
 	void setCompleted();

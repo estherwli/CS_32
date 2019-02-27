@@ -20,24 +20,36 @@ public:
 	static bool blocksMovement(Actor* me);
 	static bool blocksFlame(Actor* me);
 	static bool isPerson(Actor* me);
+	static bool isPenelope(Actor* me);
 	static bool isDumbZombie(Actor* me);
 	static bool isSmartZombie(Actor* me);
 	static bool isExit(Actor* me);
 	static bool isPit(Actor* me);
+	static bool isGoodie(Actor* me);
+	static bool isVaccineGoodie(Actor* me);
+	static bool isGasCanGoodie(Actor* me);
+	static bool isLandmineGoodie(Actor* me);
 	static bool isFlame(Actor* me);
 	static bool isVomit(Actor* me);
+	static bool isLandmine(Actor* me);
 
 	//mutator functions
 	void setDead();
 	void setBlocksMovement();
 	void setBlocksFlame();
 	void setPerson();
+	void setPenelope();
 	void setDumbZombie();
 	void setSmartZombie();
 	void setExit();
 	void setPit();
+	void setGoodie();
+	void setVaccineGoodie();
+	void setGasCanGoodie();
+	void setLandmineGoodie();
 	void setFlame();
 	void setVomit();
+	void setLandmine();
 
 private:
 	StudentWorld* m_world;
@@ -45,12 +57,18 @@ private:
 	bool m_blocksMovement;
 	bool m_blocksFlame;
 	bool m_isPerson;
+	bool m_isPenelope;
 	bool m_isDumbZombie;
 	bool m_isSmartZombie;
 	bool m_isExit;
 	bool m_isPit;
+	bool m_isGoodie;
+	bool m_isVaccineGoodie;
+	bool m_isGasCanGoodie;
+	bool m_isLandmineGoodie;
 	bool m_isFlame;
 	bool m_isVomit;
+	bool m_isLandmine;
 };
 
 class Wall : public Actor {
@@ -77,12 +95,15 @@ public:
 	//mutator functions
 	void addInfect();
 	void setInfect();
+	void addVaccine();
+	void addFlamethrower();
+	void addLandmine();
 
 private:
 	int m_lives;
 	int m_landmine;
 	int m_flamethrower;
-	int m_vaccine;
+	int m_nVaccine;
 	int m_nInfected; 
 	bool m_infected;
 };
@@ -101,6 +122,16 @@ public:
 	virtual void doSomething();
 };
 
+class Landmine : public Actor {
+public:
+	Landmine(StudentWorld* world, int startX, int startY);
+	virtual ~Landmine() {}
+	virtual void doSomething();
+private:
+	int m_nSafetyTicks;
+	bool m_active;
+};
+
 class TimedActor : public Actor {
 public:
 	TimedActor(StudentWorld* world, int startX, int startY, int dir, int depth, int imageID);
@@ -115,6 +146,31 @@ public:
 
 private:
 	int m_nTicks;
+};
+
+class Goodie : public Actor {
+public:
+	Goodie(StudentWorld* world, int startX, int startY, int imageID);
+	virtual ~Goodie() {}
+	virtual void doSomething();
+};
+
+class VaccineGoodie : public Goodie {
+public:
+	VaccineGoodie(StudentWorld* world, int startX, int startY);
+	virtual ~VaccineGoodie() {}
+};
+
+class GasCanGoodie : public Goodie {
+public:
+	GasCanGoodie(StudentWorld* world, int startX, int StartY);
+	virtual ~GasCanGoodie() {}
+};
+
+class LandmineGoodie : public Goodie {
+public:
+	LandmineGoodie(StudentWorld* world, int startX, int startY);
+	virtual ~LandmineGoodie() {}
 };
 
 class Flame : public TimedActor {
