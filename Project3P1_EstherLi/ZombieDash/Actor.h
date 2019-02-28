@@ -17,9 +17,10 @@ public:
 	//accessor functions
 	StudentWorld* world() const;
 	bool dead() const;
+	static bool isActor(Actor* me);
 	static bool blocksMovement(Actor* me);
 	static bool blocksFlame(Actor* me);
-	static bool isPerson(Actor* me);
+	static bool isHuman(Actor* me);
 	static bool isPenelope(Actor* me);
 	static bool isDumbZombie(Actor* me);
 	static bool isSmartZombie(Actor* me);
@@ -54,9 +55,10 @@ public:
 private:
 	StudentWorld* m_world;
 	bool m_dead;
+	bool m_isActor;
 	bool m_blocksMovement;
 	bool m_blocksFlame;
-	bool m_isPerson;
+	bool m_isHuman;
 	bool m_isPenelope;
 	bool m_isDumbZombie;
 	bool m_isSmartZombie;
@@ -78,23 +80,40 @@ public:
 	virtual void doSomething();
 };
 
-class Penelope : public Actor {
+class Human : public Actor {
 public:
-	Penelope(StudentWorld* world, int startX, int startY);
-	virtual ~Penelope() {}; //DEFINE LATER!!!!!!!!!!!!!!!
+	Human::Human(int imageID, StudentWorld* world, int startX, int startY);
+	virtual ~Human() {}
 	virtual void doSomething();
 
 	//accessor functions
 	bool infected() const;
 	int nInfected() const;
+
+	//mutator functions
+	void addInfect();
+	void setInfect(bool a);
+	void clearInfect();
+
+private:
+	int m_nInfected;
+	bool m_infected;
+};
+
+
+class Penelope : public Human {
+public:
+	Penelope(StudentWorld* world, int startX, int startY);
+	virtual ~Penelope() {} //DEFINE LATER!!!!!!!!!!!!!!!
+	virtual void doSomething();
+
+	//accessor functions
 	int lives() const;
 	int landmine() const;
 	int flamethrower() const;
 	int vaccine() const;
 
 	//mutator functions
-	void addInfect();
-	void setInfect();
 	void addVaccine();
 	void addFlamethrower();
 	void addLandmine();
@@ -104,8 +123,6 @@ private:
 	int m_landmine;
 	int m_flamethrower;
 	int m_nVaccine;
-	int m_nInfected; 
-	bool m_infected;
 };
 
 class Exit : public Actor {
@@ -194,6 +211,8 @@ public:
 	//helper functions
 	void checkVomit(Actor* me); //helper function to check if Zombie should vomit
 	void tryToMove(Zombie* me, int deltaX, int deltaY);
+	int pickDirection();
+	void move(Zombie* me);
 
 	//mutator functions
 	void setMovementPlan(int i);
@@ -209,10 +228,19 @@ private:
 class DumbZombie : public Zombie {
 public:
 	DumbZombie(StudentWorld* world, int startX, int startY);
-	virtual ~DumbZombie() {}
+	virtual ~DumbZombie();
 	virtual void doSomething();
+
 private:
 	bool m_hasVaccine;
+};
+
+class SmartZombie : public Zombie {
+public:
+	SmartZombie(StudentWorld* world, int startX, int startY);
+	virtual ~SmartZombie() {}
+	virtual void doSomething();
+
 };
 
 #endif // ACTOR_H_
