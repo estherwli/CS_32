@@ -22,6 +22,8 @@ public:
 	static bool blocksFlame(Actor* me);
 	static bool isHuman(Actor* me);
 	static bool isPenelope(Actor* me);
+	static bool isCitizen(Actor* me);
+	static bool isZombie(Actor* me);
 	static bool isDumbZombie(Actor* me);
 	static bool isSmartZombie(Actor* me);
 	static bool isExit(Actor* me);
@@ -38,8 +40,10 @@ public:
 	void setDead();
 	void setBlocksMovement();
 	void setBlocksFlame();
-	void setPerson();
+	void setHuman();
 	void setPenelope();
+	void setCitizen();
+	void setZombie();
 	void setDumbZombie();
 	void setSmartZombie();
 	void setExit();
@@ -60,6 +64,8 @@ private:
 	bool m_blocksFlame;
 	bool m_isHuman;
 	bool m_isPenelope;
+	bool m_isCitizen;
+	bool m_isZombie;
 	bool m_isDumbZombie;
 	bool m_isSmartZombie;
 	bool m_isExit;
@@ -148,7 +154,7 @@ class Human : public TimedActor {
 public:
 	Human::Human(int imageID, StudentWorld* world, int startX, int startY);
 	virtual ~Human() {}
-	virtual void doSomething();
+	virtual void doSomething() = 0;
 
 	//accessor functions
 	bool infected() const;
@@ -172,7 +178,6 @@ public:
 	virtual void doSomething();
 
 	//accessor functions
-	int lives() const;
 	int landmine() const;
 	int flamethrower() const;
 	int vaccine() const;
@@ -183,7 +188,6 @@ public:
 	void addLandmine();
 
 private:
-	int m_lives;
 	int m_landmine;
 	int m_flamethrower;
 	int m_nVaccine;
@@ -194,6 +198,10 @@ public:
 	Citizen(StudentWorld* world, int startX, int startY);
 	virtual ~Citizen() {}
 	virtual void doSomething();
+
+	//helper function
+	bool tryToMove(Actor* me, int tempDir);
+	void farthestFromZombie(int& newDir, int dist_z, int x, int y);
 };
 
 class Flame : public TimedActor {
@@ -212,7 +220,7 @@ class Zombie : public TimedActor {
 public:
 	Zombie(StudentWorld* world, int startX, int startY);
 	virtual ~Zombie() {}
-	virtual void doSomething();
+	virtual void doSomething() = 0;
 
 	//helper functions
 	void checkVomit(Actor* me); //helper function to check if Zombie should vomit

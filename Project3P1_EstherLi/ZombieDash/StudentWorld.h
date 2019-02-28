@@ -12,6 +12,11 @@ class Penelope;
 class StudentWorld : public GameWorld
 {
 public:
+	static const int LEFT_DOWN = 111;
+	static const int LEFT_UP = 222;
+	static const int RIGHT_DOWN = 333;
+	static const int RIGHT_UP = 444;
+
     StudentWorld(std::string assetPath);
 	~StudentWorld();
     virtual int init();
@@ -19,12 +24,13 @@ public:
     virtual void cleanUp();
 	
 	//helper functions
-	bool hasProperty(int x, int y, bool (*f)(Actor*), Actor* me = nullptr);
 	std::string level();
+	bool hasProperty(int x, int y, bool (*f)(Actor*), Actor* me = nullptr);
 	bool foundSomething(int x1, int y1, bool (*f)(Actor*));
 	void createValidObject(int x, int y, int dir, int amount, bool(*check)(Actor*), std::string projectileType);
-	int findClosestHuman(int x1, int y1);
+	int findClosestHumanOrZombie(int x1, int y1, double& distanceSq, bool(*f)(Actor*), std::string str = "");
 	double euclideanDistanceSq(int x1, int y1, int x2, int y2);
+	bool anyCitizensLeft();
 
 	//mutator functions
 	void setCompleted();

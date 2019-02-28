@@ -9,7 +9,7 @@
 using namespace std;
 
 const double OVERLAP_DISTANCE_SQUARED = 100.0;
-const double CLOSE_HUMAN_DISTANCE_SQUARED = 640.0;
+const double CLOSE_HUMAN_DISTANCE_SQUARED = 6400.0;
 
 GameWorld* createStudentWorld(string assetPath)
 {
@@ -70,6 +70,9 @@ int StudentWorld::init()
 				case Level::landmine_goodie:
 					m_actors.push_back(new LandmineGoodie(this, (SPRITE_WIDTH * level_x), (SPRITE_HEIGHT * level_y)));
 					break;
+				case Level::citizen:
+					m_actors.push_back(new Citizen(this, (SPRITE_WIDTH * level_x), (SPRITE_HEIGHT * level_y)));
+					break;
 				}
 			}
 		}
@@ -86,8 +89,12 @@ int StudentWorld::move()
 	for (int i = 0; i < m_actors.size(); i++) {
 		if (!m_actors[i]->dead()) {
 			m_actors[i]->doSomething();
-			if (m_player->dead())
+			if (m_player->dead()) {
+				decLives();
+				if (getLives() == 0)
+					return GWSTATUS_PLAYER_WON;
 				return GWSTATUS_PLAYER_DIED;
+			}
 			if (completed())
 				return GWSTATUS_FINISHED_LEVEL;
 		}
@@ -121,7 +128,7 @@ void StudentWorld::cleanUp()
 //parameters:
 //coordinates of destination 
 //an actor property (ex. blocksMovement)
-//the actor trying to move to said destination 
+//the actor trying to move to said destination (to prevent self-blocking)
 bool StudentWorld::hasProperty(int x, int y, bool(*f)(Actor*), Actor *me) {
 	//gets the coordinates of person's bounding box 
 	int x2 = x + SPRITE_WIDTH - 1;
@@ -162,12 +169,17 @@ void StudentWorld::setCompleted() {
 string StudentWorld::stat() const {
 	ostringstream score;
 	score.setf(ios::fixed);
-	score.fill('0'); //width is set to 6, empty spaces are filled with '0'
-	score << "Score: " << setw(6) << getScore();
-
+	if (getScore() >= 0) {
+		score.fill('0'); //width is set to 6, empty spaces are filled with '0'
+		score << "Score: " << setw(6) << getScore();
+	}
+	else {
+		score.fill('0');
+		score << "Score: -" << setw(5) << (-1 * getScore());
+	}
 	ostringstream stat;
 	stat.setf(ios::fixed);
-	stat << "  Level: " << getLevel() << "  Lives: " << m_player->lives() << "  Vaccines: " << m_player->vaccine()
+	stat << "  Level: " << getLevel() << "  Lives: " << getLives() << "  Vaccines: " << m_player->vaccine()
 		<< "  Flames: " << m_player->flamethrower() << "  Mines: " << m_player->landmine() << "  Infected: " << m_player->nInfected();
 
 	return score.str() + stat.str();
@@ -186,8 +198,6 @@ string StudentWorld::level() {
 }
 
 bool StudentWorld::foundSomething(int x1, int y1, bool(*f)(Actor*)) {
-	if (x1 < 0 || x1 > VIEW_WIDTH || y1 < 0 || y1 > VIEW_HEIGHT)
-		return false;
 	vector<Actor*>::iterator it;
 	it = m_actors.begin();
 	while (it != m_actors.end()) {
@@ -240,74 +250,77 @@ void StudentWorld::createValidObject(int x, int y, int dir, int amount, bool(*ch
 			return;
 		}
 		else if (projectileType == "smartzombie") {
-			if (!hasProperty(tempX, tempY, check))
 				m_actors.push_back(new SmartZombie(this, tempX, tempY));
 			return;
 		}
 		else if (projectileType == "dumbzombie") {
-			if (!hasProperty(tempX, tempY, check))
 				m_actors.push_back(new DumbZombie(this, tempX, tempY));
 			return;
 		}
 	}
 }
 
-int StudentWorld::findClosestHuman(int x1, int y1) {
-	double distClosest = CLOSE_HUMAN_DISTANCE_SQUARED + 1;
-	double distCurrent = CLOSE_HUMAN_DISTANCE_SQUARED + 1;
-	int xCurrent;
-	int yCurrent;
-	int dirClosest = -1;
-	bool closeEnough = false;
-	vector<Actor*>::iterator it;
-	it = m_actors.begin();
+int StudentWorld::findClosestHumanOrZombie(int x1, int y1, double& distanceSq, bool(*f)(Actor*), string str) {
+	double distClosest = VIEW_HEIGHT * VIEW_HEIGHT + VIEW_WIDTH * VIEW_WIDTH; //all actors must be within this distance from me
+	double distCurrent = 0;
+	int xCurrent, yCurrent;
+	int dirClosest = -1; //returns -1 if no human or zombie is close enough
+	vector<Actor*>::iterator it = m_actors.begin();
 	while (it != m_actors.end()) {
-		if (Actor::isHuman(*it)) {
+		if (f(*it)) {
 			distCurrent = euclideanDistanceSq(x1, y1, (*it)->getX(), (*it)->getY());
-			if (distCurrent < distClosest) {  //found a close enough human 
+			if (distCurrent < distClosest) {  //found a closer human or zombie
 				distClosest = distCurrent;
 				xCurrent = (*it)->getX();
 				yCurrent = (*it)->getY();
-				closeEnough = true;
 			}
 		}
 		it++;
 	}
-	if (closeEnough) {
+	if (distClosest <= CLOSE_HUMAN_DISTANCE_SQUARED) { //only returns a valid direction if human or zombie is close enough
 		int num = randInt(1, 2);
-		if (xCurrent == x1 && yCurrent < y1) //closest human is below zombie
+		if (xCurrent == x1 && yCurrent < y1) //closest human or zombie is below me
 			dirClosest = GraphObject::down;
-		else if (xCurrent == x1 && yCurrent > y1) //closest human is above zombie
+		else if (xCurrent == x1 && yCurrent > y1) //closest human or zombie is above me
 			dirClosest = GraphObject::up;
-		else if (xCurrent < x1 && yCurrent == y1) //closest human is to the left of zombie
+		else if (xCurrent < x1 && yCurrent == y1) //closest human or zombie is to the left of me
 			dirClosest = GraphObject::left;
-		else if (xCurrent > x1 && yCurrent == y1) //closest human is to the right of zombie
+		else if (xCurrent > x1 && yCurrent == y1) //closest human or zombie is to the right of me
 			dirClosest = GraphObject::right;
-		else if (xCurrent > x1 && yCurrent > y1) { //closest human is to the upper-right of zombie
+		else if (xCurrent > x1 && yCurrent > y1) { //closest human or zombie is to the upper-right of me
+			if (str == "citizen")
+				return RIGHT_UP;
 			if (num == 1)
 				dirClosest = GraphObject::up;
 			else
 				dirClosest = GraphObject::right;
 		}
-		else if (xCurrent > x1 && yCurrent < y1) { //closest human is to the lower-right of zombie
+		else if (xCurrent > x1 && yCurrent < y1) { //closest human or zombie is to the lower-right of me
+			if (str == "citizen")
+				return RIGHT_DOWN;
 			if (num == 1)
 				dirClosest = GraphObject::down;
 			else
 				dirClosest = GraphObject::right;
 		}
-		else if (xCurrent < x1 && yCurrent < y1) { //closest human is to the lower-left of zombie
+		else if (xCurrent < x1 && yCurrent < y1) { //closest human or zombie is to the lower-left of zombie
+			if (str == "citizen")
+				return LEFT_DOWN;
 			if (num == 1)
 				dirClosest = GraphObject::down;
 			else
 				dirClosest = GraphObject::left;
 		}
-		else if (xCurrent < x1 && yCurrent > y1) { //closest human is to the upper-left of zombie
+		else if (xCurrent < x1 && yCurrent > y1) { //closest human or zombie is to the upper-left of zombie
+			if (str == "citizen")
+				return LEFT_UP;
 			if (num == 1)
 				dirClosest = GraphObject::up;
 			else
 				dirClosest = GraphObject::left;
 		}
 	}
+	distanceSq = distClosest; //sets distanceSq as distance to closest actor, even if dirClosest is still -1
 	return dirClosest;
 }
 
@@ -325,6 +338,16 @@ double StudentWorld::euclideanDistanceSq(int x1, int y1, int x2, int y2) {
 	double deltaY = otherCenterY - myCenterY;
 
 	return deltaX * deltaX + deltaY * deltaY;
+}
+
+bool StudentWorld::anyCitizensLeft() {
+	vector<Actor*>::iterator it = m_actors.begin();
+	while (it != m_actors.end()) {
+		if (Actor::isCitizen(*it))
+			return true;
+		it++;
+	}
+	return false;
 }
 
 
