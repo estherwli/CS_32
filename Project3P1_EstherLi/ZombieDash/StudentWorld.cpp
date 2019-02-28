@@ -8,7 +8,8 @@
 #include <iomanip>
 using namespace std;
 
-const double OVERLAP_DISTANCE = 100.0;
+const double OVERLAP_DISTANCE_SQUARED = 100.0;
+const double CLOSE_HUMAN_DISTANCE_SQUARED = 640.0;
 
 GameWorld* createStudentWorld(string assetPath)
 {
@@ -57,6 +58,9 @@ int StudentWorld::init()
 				case Level::dumb_zombie:
 					m_actors.push_back(new DumbZombie(this, (SPRITE_WIDTH * level_x), (SPRITE_HEIGHT * level_y)));
 					break;
+				/*case Level::smart_zombie:
+					m_actors.push_back(new SmartZombie(this, (SPRITE_WIDTH * level_x), (SPRITE_HEIGHT * level_y)));
+					break;*/
 				case Level::vaccine_goodie:
 					m_actors.push_back(new VaccineGoodie(this, (SPRITE_WIDTH * level_x), (SPRITE_HEIGHT * level_y)));
 					break;
@@ -147,24 +151,6 @@ bool StudentWorld::hasProperty(int x, int y, bool(*f)(Actor*), Actor *me) {
 	return false; //our bounding box does not intersect with any object of interest's bounding box
 }
 
-bool StudentWorld::overlapped(int x1, int y1, int x2, int y2) {
-	//gets the coordinates of the center of an object's bounding box 
-	double myCenterX = x1 + (SPRITE_WIDTH / 2.0);
-	double myCenterY = y1 + (SPRITE_HEIGHT / 2.0);
-
-	//gets the coordinates of the center of an person's bounding box 
-	double otherCenterX = x2 + SPRITE_WIDTH / 2.0;
-	double otherCenterY = y2 + SPRITE_HEIGHT / 2.0;
-
-	//checks if the euclidean distance between the two centers is close enough to overlap
-	double deltaX = otherCenterX - myCenterX;
-	double deltaY = otherCenterY - myCenterY;
-	if (deltaX * deltaX + deltaY * deltaY <= OVERLAP_DISTANCE)
-		return true;
-	else
-		return false;
-}
-
 bool StudentWorld::completed() const {
 	return m_completed;
 }
@@ -208,7 +194,7 @@ bool StudentWorld::foundSomething(int x1, int y1, bool(*f)(Actor*)) {
 		if (f(*it)) {
 			int x2 = (*it)->getX();
 			int y2 = (*it)->getY();
-			if (overlapped(x1, y1, x2, y2))
+			if (euclideanDistanceSq(x1, y1, x2, y2) <= OVERLAP_DISTANCE_SQUARED)
 				return true;
 		}
 		it++;
@@ -234,23 +220,104 @@ void StudentWorld::createValidObject(int x, int y, int dir, int amount, bool(*ch
 			m_actors.push_back(new Flame(this, tempX, tempY, dir));
 		}
 		else if (projectileType == "vomit") {
-			if (hasProperty(tempX, tempY, check)) { //isPerson is the property
+			if (hasProperty(tempX, tempY, check)) { //isHuman is the property
 				m_actors.push_back(new Vomit(this, tempX, tempY, dir));
 				playSound(SOUND_ZOMBIE_VOMIT);
 				return;
 			}
 		}
 		else if (projectileType == "landmine") {
-			m_actors.push_back(new Landmine(this, tempX, tempY));
+			if (!hasProperty(tempX, tempY, check))
+				m_actors.push_back(new Landmine(this, tempX, tempY));
 			return;
 		}
 		else if (projectileType == "pit") {
-			m_actors.push_back(new Pit(this, tempX, tempY));
+			if (!hasProperty(tempX, tempY, check))
+				m_actors.push_back(new Pit(this, tempX, tempY));
+			return;
+		}
+		else if (projectileType == "vaccine") {
+			if (!hasProperty(tempX, tempY, check))
+				m_actors.push_back(new VaccineGoodie(this, tempX, tempY));
 			return;
 		}
 	}
 }
 
+int StudentWorld::findClosestHuman(int x1, int y1) {
+	double distClosest = CLOSE_HUMAN_DISTANCE_SQUARED + 1;
+	double distCurrent = CLOSE_HUMAN_DISTANCE_SQUARED + 1;
+	int xCurrent;
+	int yCurrent;
+	int dirClosest = -1;
+	bool closeEnough = false;
+	vector<Actor*>::iterator it;
+	it = m_actors.begin();
+	while (it != m_actors.end()) {
+		if (Actor::isHuman(*it)) {
+			distCurrent = euclideanDistanceSq(x1, y1, (*it)->getX(), (*it)->getY());
+			if (distCurrent < distClosest) {  //found a close enough human 
+				distClosest = distCurrent;
+				xCurrent = (*it)->getX();
+				yCurrent = (*it)->getY();
+				closeEnough = true;
+			}
+		}
+		it++;
+	}
+	if (closeEnough) {
+		int num = randInt(1, 2);
+		if (xCurrent == x1 && yCurrent < y1) //closest human is below zombie
+			dirClosest = GraphObject::down;
+		else if (xCurrent == x1 && yCurrent > y1) //closest human is above zombie
+			dirClosest = GraphObject::up;
+		else if (xCurrent < x1 && yCurrent == y1) //closest human is to the left of zombie
+			dirClosest = GraphObject::left;
+		else if (xCurrent > x1 && yCurrent == y1) //closest human is to the right of zombie
+			dirClosest = GraphObject::right;
+		else if (xCurrent > x1 && yCurrent > y1) { //closest human is to the upper-right of zombie
+			if (num == 1)
+				dirClosest = GraphObject::up;
+			else
+				dirClosest = GraphObject::right;
+		}
+		else if (xCurrent > x1 && yCurrent < y1) { //closest human is to the lower-right of zombie
+			if (num == 1)
+				dirClosest = GraphObject::down;
+			else
+				dirClosest = GraphObject::right;
+		}
+		else if (xCurrent < x1 && yCurrent < y1) { //closest human is to the lower-left of zombie
+			if (num == 1)
+				dirClosest = GraphObject::down;
+			else
+				dirClosest = GraphObject::left;
+		}
+		else if (xCurrent < x1 && yCurrent > y1) { //closest human is to the upper-left of zombie
+			if (num == 1)
+				dirClosest = GraphObject::up;
+			else
+				dirClosest = GraphObject::left;
+		}
+	}
+	return dirClosest;
+}
+
+double StudentWorld::euclideanDistanceSq(int x1, int y1, int x2, int y2) {
+	//gets the coordinates of the center of an object's bounding box 
+	double myCenterX = x1 + (SPRITE_WIDTH / 2.0);
+	double myCenterY = y1 + (SPRITE_HEIGHT / 2.0);
+
+	//gets the coordinates of the center of an person's bounding box 
+	double otherCenterX = x2 + (SPRITE_WIDTH / 2.0);
+	double otherCenterY = y2 + (SPRITE_HEIGHT / 2.0);
+
+	//checks if the euclidean distance between the two centers is close enough to overlap
+	double deltaX = otherCenterX - myCenterX;
+	double deltaY = otherCenterY - myCenterY;
+
+	return deltaX * deltaX + deltaY * deltaY;
+}
 
 
 
