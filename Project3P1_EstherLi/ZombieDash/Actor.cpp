@@ -41,7 +41,7 @@ bool Actor::dead() const {
 }
 
 bool Actor::isActor(Actor *me) {
-	return me->isActor;
+	return me->m_isActor;
 }
 
 bool Actor::blocksMovement(Actor *me) {
@@ -693,7 +693,7 @@ void Zombie::decreaseMovementPlan() {
 }
 
 void Zombie::move(Zombie* me) {
-	int dir = getDirection();
+	int dir = me->getDirection();
 	switch (dir) {
 	case up:
 		tryToMove(this, 0, 1);
@@ -719,7 +719,7 @@ int Zombie::pickDirection() {
 		return down;
 	case 3:
 		return left;
-	case 4:
+	default:
 		return right;
 	}
 }
