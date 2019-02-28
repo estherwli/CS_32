@@ -152,7 +152,7 @@ private:
 
 class Human : public TimedActor {
 public:
-	Human::Human(int imageID, StudentWorld* world, int startX, int startY);
+	Human(int imageID, StudentWorld* world, int startX, int startY);
 	virtual ~Human() {}
 	virtual void doSomething() = 0;
 
