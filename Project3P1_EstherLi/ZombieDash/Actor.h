@@ -155,6 +155,7 @@ public:
 	Human(int imageID, StudentWorld* world, int startX, int startY);
 	virtual ~Human() {}
 	virtual void doSomething() = 0;
+	bool tryToMove(Actor* me, int tempDir, int howMuch);
 
 	//accessor functions
 	bool infected() const;
@@ -200,7 +201,6 @@ public:
 	virtual void doSomething();
 
 	//helper function
-	bool tryToMove(Actor* me, int tempDir);
 	void farthestFromZombie(int& newDir, int dist_z, int x, int y);
 };
 

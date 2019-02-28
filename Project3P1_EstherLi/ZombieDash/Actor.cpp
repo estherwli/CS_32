@@ -213,6 +213,42 @@ void Human::clearInfect() {
 	m_nInfected = 0;
 }
 
+bool Human::tryToMove(Actor* me, int tempDir, int howMuch) {
+	int x = me->getX();
+	int y = me->getY();
+	switch (tempDir) {
+	case right:
+		if (!world()->hasProperty(x + 2, y, &blocksMovement, this)) {
+			setDirection(tempDir);
+			moveTo(x + howMuch, y);
+			return true;
+		}
+		break;
+	case left:
+		if (!world()->hasProperty(x - 2, y, &blocksMovement, this)) {
+			setDirection(tempDir);
+			moveTo(x - howMuch, y);
+			return true;
+		}
+		break;
+	case up:
+		if (!world()->hasProperty(x, y + 2, &blocksMovement, this)) {
+			setDirection(tempDir);
+			moveTo(x, y + howMuch);
+			return true;
+		}
+		break;
+	case down:
+		if (!world()->hasProperty(x, y - 2, &blocksMovement, this)) {
+			setDirection(tempDir);
+			moveTo(x, y - howMuch);
+			return true;
+		}
+		break;
+	}
+	return false;
+}
+
 //******************PENELOPE******************
 Penelope::Penelope(StudentWorld* world, int startX, int startY)
 	: Human(IID_PLAYER, world, startX, startY) {
@@ -289,25 +325,21 @@ void Penelope::doSomething() {
 	int ch;
 	if (world()->getKey(ch)) {
 		switch (ch) {
-		case KEY_PRESS_LEFT: //if possible, move 4 pixels left
+		case KEY_PRESS_LEFT: 
 			setDirection(left);
-			if (!world()->hasProperty(x - 4, y, &blocksMovement, this))
-				moveTo(x - 4, y);
+			tryToMove(this, left, 4);
 			break;
-		case KEY_PRESS_RIGHT: //if possible, move 4 pixels right
+		case KEY_PRESS_RIGHT:
 			setDirection(right);
-			if (!world()->hasProperty(x + 4, y, &blocksMovement, this))
-				moveTo(x + 4, y);
+			tryToMove(this, right, 4);
 			break;
-		case KEY_PRESS_UP: //if possible, move 4 pixels up
+		case KEY_PRESS_UP:
 			setDirection(up);
-			if (!world()->hasProperty(x, y + 4, &blocksMovement, this))
-				moveTo(x, y + 4);
+			tryToMove(this, up, 4);
 			break;
-		case KEY_PRESS_DOWN: //if possible, move 4 pixels down
+		case KEY_PRESS_DOWN: 
 			setDirection(down);
-			if (!world()->hasProperty(x, y - 4, &blocksMovement, this))
-				moveTo(x, y - 4);
+			tryToMove(this, down, 4);
 			break;
 		case KEY_PRESS_TAB: //if i have at least 1 landmine, create a landmine exactly where i am
 			if (landmine() >= 1)
@@ -441,54 +473,18 @@ void Citizen::doSomething() {
 			tryDir = otherDir = right;
 			break;
 		}
-		if (tryToMove(this, tryDir)) //if i'm not on the same row or column as Penelope, first try the randomly chosen direction
+		if (tryToMove(this, tryDir, 2)) //if i'm not on the same row or column as Penelope, first try the randomly chosen direction
 			return;
-		else if (tryToMove(this, otherDir)) //if randomly chosen direction is blocked, try the other direction 
+		else if (tryToMove(this, otherDir, 2)) //if randomly chosen direction is blocked, try the other direction 
 			return;
 	}
 	if (direction_z != -1) { //if there is a Zombie within 80 pixels from me
 		int newDir = -1;
 		farthestFromZombie(newDir, dist_z, x, y); //try to find a direction to get farther away from all Zombies
 		if (newDir != -1)
-			tryToMove(this, newDir);
+			tryToMove(this, newDir, 2);
 	}
 	return;
-}
-
-bool Citizen::tryToMove(Actor* me, int tempDir) {
-	int x = me->getX();
-	int y = me->getY();
-	switch (tempDir) {
-	case right:
-		if (!world()->hasProperty(x + 2, y, &blocksMovement, this)) {
-			setDirection(tempDir);
-			moveTo(x + 2, y);
-			return true;
-		}
-		break;
-	case left:
-		if (!world()->hasProperty(x - 2, y, &blocksMovement, this)) {
-			setDirection(tempDir);
-			moveTo(x - 2, y);
-			return true;
-		}
-		break;
-	case up:
-		if (!world()->hasProperty(x, y + 2, &blocksMovement, this)) {
-			setDirection(tempDir);
-			moveTo(x, y + 2);
-			return true;
-		}
-		break;
-	case down:
-		if (!world()->hasProperty(x, y - 2, &blocksMovement, this)) {
-			setDirection(tempDir);
-			moveTo(x, y - 2);
-			return true;
-		}
-		break;
-	}
-	return false;
 }
 
 void Citizen::farthestFromZombie(int& newDir, int dist_z, int x, int y) {
