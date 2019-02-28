@@ -80,7 +80,71 @@ public:
 	virtual void doSomething();
 };
 
-class Human : public Actor {
+class Exit : public Actor {
+public:
+	Exit(StudentWorld* world, int startX, int startY);
+	virtual ~Exit() {} //define later?
+	virtual void doSomething();
+};
+
+class Pit : public Actor {
+public:
+	Pit(StudentWorld* world, int startX, int startY);
+	virtual ~Pit() {}
+	virtual void doSomething();
+};
+
+class Landmine : public Actor {
+public:
+	Landmine(StudentWorld* world, int startX, int startY);
+	virtual ~Landmine() {}
+	virtual void doSomething();
+private:
+	int m_nSafetyTicks;
+	bool m_active;
+};
+class Goodie : public Actor {
+public:
+	Goodie(StudentWorld* world, int startX, int startY, int imageID);
+	virtual ~Goodie() {}
+	virtual void doSomething();
+};
+
+class VaccineGoodie : public Goodie {
+public:
+	VaccineGoodie(StudentWorld* world, int startX, int startY);
+	virtual ~VaccineGoodie() {}
+};
+
+class GasCanGoodie : public Goodie {
+public:
+	GasCanGoodie(StudentWorld* world, int startX, int StartY);
+	virtual ~GasCanGoodie() {}
+};
+
+class LandmineGoodie : public Goodie {
+public:
+	LandmineGoodie(StudentWorld* world, int startX, int startY);
+	virtual ~LandmineGoodie() {}
+};
+
+class TimedActor : public Actor {
+public:
+	TimedActor(StudentWorld* world, int startX, int startY, int dir, int depth, int imageID);
+	virtual ~TimedActor() {}
+	virtual void doSomething();
+
+	//accessor function
+	int nTicks();
+
+	//mutator function
+	void addTicks();
+
+private:
+	int m_nTicks;
+};
+
+class Human : public TimedActor {
 public:
 	Human::Human(int imageID, StudentWorld* world, int startX, int startY);
 	virtual ~Human() {}
@@ -125,69 +189,11 @@ private:
 	int m_nVaccine;
 };
 
-class Exit : public Actor {
-public:
-	Exit(StudentWorld* world, int startX, int startY);
-	virtual ~Exit() {} //define later?
+class Citizen : public Human {
+public: 
+	Citizen(StudentWorld* world, int startX, int startY);
+	virtual ~Citizen() {}
 	virtual void doSomething();
-};
-
-class Pit : public Actor {
-public:
-	Pit(StudentWorld* world, int startX, int startY);
-	virtual ~Pit() {}
-	virtual void doSomething();
-};
-
-class Landmine : public Actor {
-public:
-	Landmine(StudentWorld* world, int startX, int startY);
-	virtual ~Landmine() {}
-	virtual void doSomething();
-private:
-	int m_nSafetyTicks;
-	bool m_active;
-};
-
-class TimedActor : public Actor {
-public:
-	TimedActor(StudentWorld* world, int startX, int startY, int dir, int depth, int imageID);
-	virtual ~TimedActor() {}
-	virtual void doSomething();
-
-	//accessor function
-	int nTicks();
-
-	//mutator function
-	void addTicks();
-
-private:
-	int m_nTicks;
-};
-
-class Goodie : public Actor {
-public:
-	Goodie(StudentWorld* world, int startX, int startY, int imageID);
-	virtual ~Goodie() {}
-	virtual void doSomething();
-};
-
-class VaccineGoodie : public Goodie {
-public:
-	VaccineGoodie(StudentWorld* world, int startX, int startY);
-	virtual ~VaccineGoodie() {}
-};
-
-class GasCanGoodie : public Goodie {
-public:
-	GasCanGoodie(StudentWorld* world, int startX, int StartY);
-	virtual ~GasCanGoodie() {}
-};
-
-class LandmineGoodie : public Goodie {
-public:
-	LandmineGoodie(StudentWorld* world, int startX, int startY);
-	virtual ~LandmineGoodie() {}
 };
 
 class Flame : public TimedActor {
@@ -228,7 +234,7 @@ private:
 class DumbZombie : public Zombie {
 public:
 	DumbZombie(StudentWorld* world, int startX, int startY);
-	virtual ~DumbZombie();
+	virtual ~DumbZombie() {}
 	virtual void doSomething();
 
 private:

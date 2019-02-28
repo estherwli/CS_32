@@ -168,19 +168,20 @@ void Actor::setLandmine() {
 
 //******************HUMAN******************
 Human::Human(int imageID, StudentWorld* world, int startX, int startY)
-	:Actor(imageID, startX, startY, right, 0, world) {
+	:TimedActor(world, startX, startY, right, 0, imageID) {
 	setPerson();
 	m_infected = false;
 	m_nInfected = 0;
 }
 
 void Human::doSomething() {
+	if (dead())
+		return;
 	int x = getX();
 	int y = getY();
 	//encountered zombie vomit
 	if (world()->foundSomething(x, y, &isVomit))
 		setInfect(true);
-
 }
 
 bool Human::infected() const {
@@ -244,8 +245,6 @@ void Penelope::addLandmine() {
 }
 
 void Penelope::doSomething() {
-	if (dead())
-		return;
 	Human::doSomething();
 	if (infected()) {
 		if (nInfected() == 500) {
@@ -306,7 +305,8 @@ void Penelope::doSomething() {
 				moveTo(x, y + 4);
 			break;
 		case KEY_PRESS_DOWN:
-			m_flamethrower = 3;
+			m_flamethrower = 30;
+			m_landmine = 5;
 			setDirection(down);
 			if (!world()->hasProperty(x, y - 4, &blocksMovement, this))
 				moveTo(x, y - 4);
@@ -345,6 +345,47 @@ void Penelope::doSomething() {
 		}
 	}
 	return;
+}
+
+//******************CITIZEN******************
+Citizen::Citizen(StudentWorld *world, int startX, int startY)
+	:Human(IID_CITIZEN, world, startX, startY) {
+}
+
+void Citizen::doSomething() {
+	Human::doSomething();
+	if (infected()) {
+		if (nInfected() == 500) {
+			setDead();
+			world()->playSound(SOUND_ZOMBIE_BORN);
+			world()->increaseScore(-1000);
+			int randZombie = randInt(1, 10);
+			if (randZombie <= 3)
+				world()->createValidObject(getX() - SPRITE_WIDTH, getY(), right, 1, &blocksMovement, "smartzombie");
+			else
+				world()->createValidObject(getX() - SPRITE_WIDTH, getY(), right, 1, &blocksMovement, "dumbzombie");
+			return;
+		}
+		else
+			addInfect();
+	}
+	addTicks();
+	if (nTicks() % 2 == 0) //do nothing every other tick
+		return;
+
+	//IMPLEMENT DIST_P AND DIST_Z HERE
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
 //******************WALL******************
@@ -521,16 +562,7 @@ void Zombie::doSomething() {
 		return;
 	int x = getX();
 	int y = getY();
-	//encountered a pit or a flame
-	if (world()->foundSomething(x, y, &isPit) || world()->foundSomething(x, y, &isFlame)) {
-		setDead();
-		world()->playSound(SOUND_ZOMBIE_DIE);
-		world()->increaseScore(1000);
-		return;
-	}
-
 	move(this);
-
 	//if zombie is not dead or idle during this tick
 	checkVomit(this);
 }
@@ -611,19 +643,10 @@ void Zombie::checkVomit(Actor* me) {
 DumbZombie::DumbZombie(StudentWorld* world, int startX, int startY)
 	: Zombie(world, startX, startY) {
 	setDumbZombie();
-	m_hasVaccine = true;
+	m_hasVaccine = false;
 	int num = (randInt(1, 10));
 	if (num == 1)
 		m_hasVaccine = true; //1 out of 10 zombies carry a vaccine
-}
-
-DumbZombie::~DumbZombie() {
-	if (m_hasVaccine) {
-		int y = getY();
-		int x = getX();
-		int dir = pickDirection();
-		world()->createValidObject(x, y, dir, 1, &isActor, "vaccine");
-	}
 }
 
 void DumbZombie::doSomething() {
@@ -632,6 +655,17 @@ void DumbZombie::doSomething() {
 	if (movementPlan() == 0) {
 		setMovementPlan(randInt(3, 10));
 		setDirection(pickDirection());
+	}
+	//encountered a pit or a flame
+	if (world()->foundSomething(getX(), getY(), &isPit) || world()->foundSomething(getX(), getY(), &isFlame)) {
+		setDead();
+		world()->playSound(SOUND_ZOMBIE_DIE);
+		world()->increaseScore(1000);
+		if (m_hasVaccine) {
+			int dir = pickDirection();
+			world()->createValidObject(getX(), getY(), dir, 1, &isActor, "vaccine");
+		}
+		return;
 	}
 	Zombie::doSomething();
 }
@@ -645,14 +679,19 @@ SmartZombie::SmartZombie(StudentWorld* world, int startX, int startY)
 void SmartZombie::doSomething() {
 	if (dead())
 		return;
-	int x = getX();
-	int y = getY();
 	if (movementPlan() == 0) {
 		setMovementPlan(randInt(3, 10));
-		if (world()->findClosestHuman(x, y) == -1)
+		if (world()->findClosestHuman(getX(), getY()) == -1)
 			setDirection(pickDirection());
 		else
-			setDirection(world()->findClosestHuman(x, y));
+			setDirection(world()->findClosestHuman(getX(), getY()));
+	}
+	//encountered a pit or a flame
+	if (world()->foundSomething(getX(), getY(), &isPit) || world()->foundSomething(getX(), getY(), &isFlame)) {
+		setDead();
+		world()->playSound(SOUND_ZOMBIE_DIE);
+		world()->increaseScore(2000);
+		return;
 	}
 	Zombie::doSomething();
 }

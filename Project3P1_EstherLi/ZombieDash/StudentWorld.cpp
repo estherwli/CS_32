@@ -58,9 +58,9 @@ int StudentWorld::init()
 				case Level::dumb_zombie:
 					m_actors.push_back(new DumbZombie(this, (SPRITE_WIDTH * level_x), (SPRITE_HEIGHT * level_y)));
 					break;
-				/*case Level::smart_zombie:
+				case Level::smart_zombie:
 					m_actors.push_back(new SmartZombie(this, (SPRITE_WIDTH * level_x), (SPRITE_HEIGHT * level_y)));
-					break;*/
+					break;
 				case Level::vaccine_goodie:
 					m_actors.push_back(new VaccineGoodie(this, (SPRITE_WIDTH * level_x), (SPRITE_HEIGHT * level_y)));
 					break;
@@ -227,18 +227,26 @@ void StudentWorld::createValidObject(int x, int y, int dir, int amount, bool(*ch
 			}
 		}
 		else if (projectileType == "landmine") {
-			if (!hasProperty(tempX, tempY, check))
-				m_actors.push_back(new Landmine(this, tempX, tempY));
+			m_actors.push_back(new Landmine(this, tempX, tempY));
 			return;
 		}
 		else if (projectileType == "pit") {
-			if (!hasProperty(tempX, tempY, check))
-				m_actors.push_back(new Pit(this, tempX, tempY));
+			m_actors.push_back(new Pit(this, tempX, tempY));
 			return;
 		}
 		else if (projectileType == "vaccine") {
 			if (!hasProperty(tempX, tempY, check))
 				m_actors.push_back(new VaccineGoodie(this, tempX, tempY));
+			return;
+		}
+		else if (projectileType == "smartzombie") {
+			if (!hasProperty(tempX, tempY, check))
+				m_actors.push_back(new SmartZombie(this, tempX, tempY));
+			return;
+		}
+		else if (projectileType == "dumbzombie") {
+			if (!hasProperty(tempX, tempY, check))
+				m_actors.push_back(new DumbZombie(this, tempX, tempY));
 			return;
 		}
 	}

@@ -1,11 +1,55 @@
-﻿  StudentWorld.cpp
+﻿  Actor.cpp
+c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\actor.cpp(42): warning C4305: 'return': truncation from 'bool (__cdecl *)(Actor *)' to 'bool'
+c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\actor.cpp(180): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\actor.cpp(181): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\actor.cpp(263): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\actor.cpp(266): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\actor.cpp(272): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\actor.cpp(278): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\actor.cpp(282): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\actor.cpp(286): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\actor.cpp(294): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\actor.cpp(299): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\actor.cpp(304): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\actor.cpp(311): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\actor.cpp(316): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\actor.cpp(331): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\actor.cpp(334): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\actor.cpp(337): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\actor.cpp(340): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\actor.cpp(364): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\actor.cpp(366): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\actor.cpp(435): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\actor.cpp(436): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\actor.cpp(450): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\actor.cpp(451): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\actor.cpp(452): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\actor.cpp(453): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\actor.cpp(454): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\actor.cpp(501): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\actor.cpp(506): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\actor.cpp(563): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\actor.cpp(564): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\actor.cpp(605): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\actor.cpp(606): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\actor.cpp(617): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\actor.cpp(618): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\actor.cpp(636): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\actor.cpp(660): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\actor.cpp(666): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\actor.cpp(684): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\actor.cpp(687): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\actor.cpp(690): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+  StudentWorld.cpp
 c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\studentworld.cpp(86): warning C4018: '<': signed/unsigned mismatch
 c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\studentworld.cpp(96): warning C4018: '<': signed/unsigned mismatch
 c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\studentworld.cpp(135): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
 c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\studentworld.cpp(137): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
 c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\studentworld.cpp(195): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
 c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\studentworld.cpp(196): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
-c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\studentworld.cpp(258): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
-c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\studentworld.cpp(261): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
-c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\studentworld.cpp(262): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\studentworld.cpp(266): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\studentworld.cpp(269): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\studentworld.cpp(270): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+  Generating Code...
+c:\users\esther\desktop\cs_32\project3p1_estherli\zombiedash\actor.cpp(602): warning C4715: 'Zombie::pickDirection': not all control paths return a value
   ZombieDash.vcxproj -> C:\Users\Esther\Desktop\CS_32\Project3P1_EstherLi\Debug\ZombieDash.exe
