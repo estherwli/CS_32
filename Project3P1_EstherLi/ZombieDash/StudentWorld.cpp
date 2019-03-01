@@ -225,12 +225,12 @@ void StudentWorld::createValidObject(int x, int y, int dir, int amount, bool(*ch
 		else if (dir == GraphObject::right)
 			tempX = x + i * SPRITE_WIDTH;
 		if (projectileType == "flame") {
-			if (hasProperty(tempX, tempY, check)) //blocksFlame is the property
+			if (foundSomething(tempX, tempY, check)) //blocksFlame is the property
 				return;
 			m_actors.push_back(new Flame(this, tempX, tempY, dir));
 		}
 		else if (projectileType == "vomit") {
-			if (hasProperty(tempX, tempY, check)) { //isHuman is the property
+			if (foundSomething(tempX, tempY, check)) { //isHuman is the property
 				m_actors.push_back(new Vomit(this, tempX, tempY, dir));
 				playSound(SOUND_ZOMBIE_VOMIT);
 				return;
@@ -245,7 +245,7 @@ void StudentWorld::createValidObject(int x, int y, int dir, int amount, bool(*ch
 			return;
 		}
 		else if (projectileType == "vaccine") {
-			if (!hasProperty(tempX, tempY, check))
+			if (!foundSomething(tempX, tempY, check))
 				m_actors.push_back(new VaccineGoodie(this, tempX, tempY));
 			return;
 		}
