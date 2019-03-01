@@ -390,7 +390,7 @@ void Citizen::doSomething() {
 		else
 			addInfect(); //infected but not yet a Zombie
 	}
-	if (world()->foundSomething(x, y, &isVomit)) {
+	if (world()->foundSomething(x, y, &isVomit) && !infected()) {
 		world()->playSound(SOUND_CITIZEN_INFECTED);
 		setInfect(true);
 	}
@@ -475,8 +475,10 @@ void Citizen::doSomething() {
 		}
 		if (tryToMove(this, tryDir, 2)) //if i'm not on the same row or column as Penelope, first try the randomly chosen direction
 			return;
-		else if (tryToMove(this, otherDir, 2)) //if randomly chosen direction is blocked, try the other direction 
+		else {
+			tryToMove(this, otherDir, 2); //if randomly chosen direction is blocked, try the other direction 
 			return;
+		}
 	}
 	if (direction_z != -1) { //if there is a Zombie within 80 pixels from me
 		int newDir = -1;
@@ -762,7 +764,7 @@ void Zombie::checkVomit(Actor* me) {
 DumbZombie::DumbZombie(StudentWorld* world, int startX, int startY)
 	: Zombie(world, startX, startY) {
 	setDumbZombie();
-	m_hasVaccine = false;
+	m_hasVaccine = true;
 	int num = (randInt(1, 10));
 	if (num == 1)
 		m_hasVaccine = true; //1 out of 10 zombies carry a vaccine
