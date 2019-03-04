@@ -9,7 +9,7 @@ class StudentWorld;
 class Actor : public GraphObject {
 public:
 	Actor(int imageID, double startX, double startY, Direction startDirection, int depth, StudentWorld* world);
-	virtual ~Actor() {} //DEFINE LATER??????
+	virtual ~Actor() {} 
 
 	//virtual functions
 	virtual void doSomething() = 0;
@@ -82,14 +82,14 @@ private:
 class Wall : public Actor {
 public:
 	Wall(StudentWorld* world, int startX, int startY);
-	virtual ~Wall() {} //DEFINE LATER???????????
+	virtual ~Wall() {}
 	virtual void doSomething();
 };
 
 class Exit : public Actor {
 public:
 	Exit(StudentWorld* world, int startX, int startY);
-	virtual ~Exit() {} //define later?
+	virtual ~Exit() {} 
 	virtual void doSomething();
 };
 
@@ -175,7 +175,7 @@ private:
 class Penelope : public Human {
 public:
 	Penelope(StudentWorld* world, int startX, int startY);
-	virtual ~Penelope() {} //DEFINE LATER!!!!!!!!!!!!!!!
+	virtual ~Penelope() {} 
 	virtual void doSomething();
 
 	//accessor functions

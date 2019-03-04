@@ -36,12 +36,12 @@ int StudentWorld::init()
 	else if (result == Level::load_fail_bad_format)
 		return GWSTATUS_LEVEL_ERROR;
 	else if (result == Level::load_success) {
-		for (int i = 0; i < LEVEL_HEIGHT; i++) {
+		for (int i = 0; i < LEVEL_HEIGHT; i++) { //iterate through the level file 
 			for (int j = 0; j < LEVEL_WIDTH; j++) {
 				int level_x = j;
 				int level_y = i;
 				Level::MazeEntry ge = lev.getContentsOf(level_x, level_y);
-				switch (ge) {
+				switch (ge) { //construct appropriate Actor objects based on the level file
 				case Level::wall:
 					m_actors.push_back(new Wall(this, (SPRITE_WIDTH * level_x), (SPRITE_HEIGHT * level_y)));
 					break;
@@ -73,6 +73,8 @@ int StudentWorld::init()
 				case Level::citizen:
 					m_actors.push_back(new Citizen(this, (SPRITE_WIDTH * level_x), (SPRITE_HEIGHT * level_y)));
 					break;
+				default:
+					break;
 				}
 			}
 		}
@@ -89,10 +91,8 @@ int StudentWorld::move()
 	for (int i = 0; i < m_actors.size(); i++) {
 		if (!m_actors[i]->dead()) {
 			m_actors[i]->doSomething();
-			if (m_player->dead()) {
+			if (m_player->dead()) { //check if Penelope died after every Actor's doSomething is called
 				decLives();
-				if (getLives() == 0)
-					return GWSTATUS_PLAYER_WON;
 				return GWSTATUS_PLAYER_DIED;
 			}
 			if (completed())
@@ -115,7 +115,7 @@ int StudentWorld::move()
 	return GWSTATUS_CONTINUE_GAME;
 }
 
-void StudentWorld::cleanUp()
+void StudentWorld::cleanUp() //removes all Actors that are dead
 {
 	for (int i = m_actors.size() - 1; i >= 0; i--) {
 		if (m_actors[i] != nullptr) {
@@ -175,7 +175,7 @@ string StudentWorld::stat() const {
 	}
 	else {
 		score.fill('0');
-		score << "Score: -" << setw(5) << (-1 * getScore());
+		score << "Score: -" << setw(5) << (-1 * getScore()); //when there is a negative sign, width of number is set to 5
 	}
 	ostringstream stat;
 	stat.setf(ios::fixed);
@@ -200,7 +200,7 @@ string StudentWorld::level() {
 bool StudentWorld::foundSomething(int x1, int y1, bool(*f)(Actor*)) {
 	vector<Actor*>::iterator it;
 	it = m_actors.begin();
-	while (it != m_actors.end()) {
+	while (it != m_actors.end()) { //iterate through m_actors vector to find if any appropriate Actors overlap with (x1, y1)
 		if (f(*it)) {
 			int x2 = (*it)->getX();
 			int y2 = (*it)->getY();
@@ -215,7 +215,7 @@ bool StudentWorld::foundSomething(int x1, int y1, bool(*f)(Actor*)) {
 void StudentWorld::createValidObject(int x, int y, int dir, int amount, bool(*check)(Actor*), string projectileType) {
 	int tempX = x;
 	int tempY = y;
-	for (int i = 1; i < amount + 1; i++) {
+	for (int i = 1; i < amount + 1; i++) { //determines how many and where to create the new object
 		if (dir == GraphObject::up)
 			tempY = y + i * SPRITE_HEIGHT;
 		else if (dir == GraphObject::down)
@@ -225,12 +225,12 @@ void StudentWorld::createValidObject(int x, int y, int dir, int amount, bool(*ch
 		else if (dir == GraphObject::right)
 			tempX = x + i * SPRITE_WIDTH;
 		if (projectileType == "flame") {
-			if (foundSomething(tempX, tempY, check)) //blocksFlame is the property
+			if (foundSomething(tempX, tempY, check)) //blocksFlame is the property we want to check
 				return;
 			m_actors.push_back(new Flame(this, tempX, tempY, dir));
 		}
 		else if (projectileType == "vomit") {
-			if (foundSomething(tempX, tempY, check)) { //isHuman is the property
+			if (foundSomething(tempX, tempY, check)) { //isHuman is the property we want to check
 				m_actors.push_back(new Vomit(this, tempX, tempY, dir));
 				playSound(SOUND_ZOMBIE_VOMIT);
 				return;
@@ -344,7 +344,7 @@ bool StudentWorld::anyCitizensLeft() {
 	vector<Actor*>::iterator it = m_actors.begin();
 	while (it != m_actors.end()) {
 		if (Actor::isCitizen(*it))
-			return true;
+			return true; //there is at least one Citizen left
 		it++;
 	}
 	return false;
