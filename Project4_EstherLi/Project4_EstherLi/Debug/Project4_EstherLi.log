@@ -1,5 +1,5 @@
 ﻿  main.cpp
-c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\trie.h(119): warning C4018: '<': signed/unsigned mismatch
+c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\trie.h(117): warning C4018: '<': signed/unsigned mismatch
   c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\trie.h(111): note: while compiling class template member function 'void Trie<int>::insert(const std::string &,const ValueType &)'
           with
           [

@@ -48,15 +48,15 @@ private:
 		Node(const ValueType& value) { m_values.push_back(value); }
 		Node(Pair* child) { m_children.push_back(child); }
 		~Node() {
-			m_children.clear();
-			//for (int i = m_values.size(); i >= 0; i--) //destructs the m_values vector 
-			//	m_values.pop_back();
-			//Node* p = &m_children.front(); //destructs the m_children list
-			//while (p != nullptr) {
-			//	Node* n = p->next;
-			//	delete p;
-			//	p = n;
-			
+			for (int i = m_values.size() - 1; i >= 0; i--) {
+				m_values.pop_back();
+			}
+			for (int i = m_children.size() - 1; i >= 0; i--) {
+				if (m_children[i] != nullptr) {
+					delete m_children[i];
+					m_children.pop_back();
+				}
+			}			
 		}
 
 		//data members for Node 
@@ -92,7 +92,7 @@ void Trie<ValueType>::freeTree(Node* current) {
 	if (current == nullptr)
 		return;
 	if (current->m_children.size() != 0) {
-		typename vector<Pair*>::iterator it = current->m_children.begin();
+		typename std::vector<Pair*>::iterator it = current->m_children.begin();
 		while (it != current->m_children.end()) {
 			freeTree((*it)->child());
 			it++;
@@ -111,11 +111,9 @@ template<typename ValueType>
 void Trie<ValueType>::insert(const std::string& key, const ValueType& value) {
 	int i = 0;
 	Node* curNode = m_root;
-	Node* prevNode = m_root;
 
 	if (m_root->m_children.size() != 0) { //Trie is not empty	
-		typename vector<Pair*>::iterator it = curNode->m_children.begin();
-
+		typename std::vector<Pair*>::iterator it = curNode->m_children.begin();
 		while (i < key.size() && it != curNode->m_children.end()) {
 			if ((*it)->label() == key[i]) { //found a Node with the right label, so move on to the next character 
 				i++;
@@ -154,7 +152,7 @@ template<typename ValueType>
 void Trie<ValueType>::printMe(Node* current, std::string path) {
 	if (current == nullptr || current->m_children.empty())
 		return;
-	typename vector<Pair*>::iterator it = current->m_children.begin();
+	typename std::vector<Pair*>::iterator it = current->m_children.begin();
 	while (it != current->m_children.end()) {
 		std::cout << path << (*it)->label() << std::endl;
 		printMe((*it)->child(), path + (*it)->label() + "/");
