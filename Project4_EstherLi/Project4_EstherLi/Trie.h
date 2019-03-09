@@ -45,8 +45,8 @@ private:
 
 	struct Node {
 		Node() {}
-		Node(ValueType value) { m_values.push_back(value); }
-		Node(Pair child) { m_children.push_back(child); }
+		Node(const ValueType& value) { m_values.push_back(value); }
+		Node(Pair* child) { m_children.push_back(child); }
 		~Node() {
 			m_children.clear();
 			//for (int i = m_values.size(); i >= 0; i--) //destructs the m_values vector 
@@ -61,7 +61,7 @@ private:
 
 		//data members for Node 
 		std::vector<ValueType> m_values;
-		std::list<Pair> m_children;
+		std::vector<Pair*> m_children;
 	};
 
 	//private functions for Trie
@@ -70,10 +70,10 @@ private:
 	//private data member for Trie 
 	Node* m_root;
 
-//public:
-//	//************************************
-//	void printMe(Node* current);
-//	void print();
+public:
+	//************************************
+	void printMe(Node* current, std::string path);
+	void print();
 //	//************************************
 };
 
@@ -92,10 +92,10 @@ void Trie<ValueType>::freeTree(Node* current) {
 	if (current == nullptr)
 		return;
 	if (current->m_children.size() != 0) {
-		Pair* p = &(current->m_children.front());
-		while (p != nullptr) {
-			freeTree(p->child());
-			p++;
+		typename vector<Pair*>::iterator it = current->m_children.begin();
+		while (it != current->m_children.end()) {
+			freeTree((*it)->child());
+			it++;
 		}
 	}
 	delete current;
@@ -114,24 +114,24 @@ void Trie<ValueType>::insert(const std::string& key, const ValueType& value) {
 	Node* prevNode = m_root;
 
 	if (m_root->m_children.size() != 0) { //Trie is not empty	
-		Pair* p = &(curNode->m_children.front());
+		typename vector<Pair*>::iterator it = curNode->m_children.begin();
 
-		while (i < key.size() && p != nullptr) {
-			if (p->label() == key[i]) { //found a Node with the right label, so move on to the next character 
+		while (i < key.size() && it != curNode->m_children.end()) {
+			if ((*it)->label() == key[i]) { //found a Node with the right label, so move on to the next character 
 				i++;
 				if (i == key.size()) {//found the last character of key
-					p->child()->m_values.push_back(value); //push value to the m_values vector of the last character's Node
+					(*it)->child()->m_values.push_back(value); //push value to the m_values vector of the last character's Node
 					return;
 				}
-				else if (p->child() != nullptr) {
-					curNode = p->child(); //traverse deeper to the next Node
-					p = &(curNode->m_children.front());
+				else if ((*it)->child() != nullptr) {
+					curNode = (*it)->child(); //traverse deeper to the next Node
+					it = curNode->m_children.begin();
 				}
 				else
 					break; //we have not reached the last character of key, but there are no more children
 			}
 			else
-				p++; //traverse across to other children of our current Node
+				it++; //traverse across to other children of our current Node
 		}
 	}
 	int j = key.size() - 1;
@@ -142,35 +142,29 @@ void Trie<ValueType>::insert(const std::string& key, const ValueType& value) {
 		if (j == key.size() - 1)
 			newChild = new Node(value);
 		else 
-			newChild = new Node(*newPair);
+			newChild = new Node(newPair);
 		newPair = new Pair(key[j], newChild);
 		j--;
 	}
-	curNode->m_children.push_back(*newPair);
+	curNode->m_children.push_back(newPair);
 	return;
 }
 
-//template<typename ValueType>
-//void Trie<ValueType>::printMe(Node* current) {
-//	if (current == nullptr)
-//		return;
-//	Pair* p = &(current->m_children.front());
-//	while (p != nullptr) {
-//		std::cout << p->label();
-//		Pair* q = &(p->child()->m_children.front());
-//		while (q != nullptr) {
-//			return printMe(q->child());
-//			q++;
-//		}
-//		p++;
-//	}
-//
-//
-//}
-//
-//template<typename ValueType>
-//void Trie<ValueType>::print() {
-//	printMe(m_root);
-//}
+template<typename ValueType>
+void Trie<ValueType>::printMe(Node* current, std::string path) {
+	if (current == nullptr || current->m_children.empty())
+		return;
+	typename vector<Pair*>::iterator it = current->m_children.begin();
+	while (it != current->m_children.end()) {
+		std::cout << path << (*it)->label() << std::endl;
+		printMe((*it)->child(), path + (*it)->label() + "/");
+		it++;
+	}
+}
+
+template<typename ValueType>
+void Trie<ValueType>::print() {
+	printMe(m_root, "");
+}
 
 #endif // TRIE_INCLUDED
