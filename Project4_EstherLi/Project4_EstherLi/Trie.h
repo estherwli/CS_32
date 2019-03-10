@@ -16,7 +16,7 @@ public:
 	~Trie();
 	void reset();
 	void insert(const std::string& key, const ValueType& value);
-	//std::vector<ValueType> find(const std::string& key, bool exactMatchOnly) const;
+	std::vector<ValueType> find(const std::string& key, bool exactMatchOnly) const;
 
 
 	// C++11 syntax for preventing copying and assignment
@@ -66,6 +66,7 @@ private:
 
 	//private functions for Trie
 	void freeTree(Node* current);
+	std::vector<ValueType> findMe(const std::string& key, bool exactMatchOnly) const;
 
 	//private data member for Trie 
 	Node* m_root;
@@ -113,12 +114,13 @@ void Trie<ValueType>::insert(const std::string& key, const ValueType& value) {
 	for (int i = 0; i < key.size(); i++) {
 		bool next = false;
 		for (int j = 0; j < curNode->m_children.size(); j++) {
-			if (curNode->m_children[j]->label() == key[i]) { //found a child with the same label as a char in key
+			Pair* curChild = curNode->m_children[j];
+			if (curChild->label() == key[i]) { //found a child with the same label as a char in key
 				if (i == key.size() - 1) {
-					curNode->m_children[j]->child()->m_values.push_back(value); //found the last char in key
+					curChild->child()->m_values.push_back(value); //found the last char in key
 					return;
 				}
-				curNode = curNode->m_children[j]->child(); //traverse deeper into the trie
+				curNode = curChild->child(); //traverse deeper into the trie
 				next = true; //note that we traversed to the next level already
 				break;
 			}
@@ -136,13 +138,51 @@ void Trie<ValueType>::insert(const std::string& key, const ValueType& value) {
 }
 
 template<typename ValueType>
+std::vector<ValueType> Trie<ValueType>::find(const std::string& key, bool exactMatchOnly) const {
+	std::vector<ValueType> result;
+	std::vector<ValueType> temp;
+	Node* curNode = m_root;
+	Pair* curChild;
+	char correct;
+
+	for (int i = 0; i < key.size(); i++) {
+		for (int j = 0; j < curNode->m_children.size(); j++) {
+			curChild = curNode->m_children[j];
+			correct = curChild->label();
+			if (!exactMatchOnly && key[i] != correct && i > 0 && i < key.size() - 1) {
+				std::string snip = key.substr(0, i) + correct + key.substr(i + 1, key.size() - i - 1);
+				temp = find(snip, true);
+				result.insert(result.end(), temp.begin(), temp.end());
+			}
+			else if (!exactMatchOnly && key[i] != correct && i == key.size() - 1) {
+				temp = find(key.substr(0, i) + correct, true);
+				result.insert(result.end(), temp.begin(), temp.end());
+			}
+		}
+		for (int j = 0; j < curNode->m_children.size(); j++) {
+			curChild = curNode->m_children[j];
+			correct = curChild->label();
+			if (key[i] == correct) {
+				if (i == key.size() - 1)
+					result.insert(result.end(), curChild->child()->m_values.begin(), curChild->child()->m_values.end());
+				curNode = curChild->child();
+				break;
+			}
+		}
+		if (key[i] == correct)
+			continue;
+	}
+	return result;
+}
+
+template<typename ValueType>
 void Trie<ValueType>::printMe(Node* current, std::string path) {
 	if (current == nullptr || current->m_children.empty())
 		return;
 	typename std::vector<Pair*>::iterator it = current->m_children.begin();
 	while (it != current->m_children.end()) {
 		std::cout << path << (*it)->label() << std::endl;
-		printMe((*it)->child(), path + (*it)->label() + "/");
+		printMe((*it)->child(), path + (*it)->label() + '/');
 		it++;
 	}
 }
