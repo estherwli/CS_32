@@ -1,5 +1,6 @@
 #include "Trie.h"
 #include "provided.h"
+
 #include <iostream>
 #include <vector>
 #include <cassert>
@@ -74,8 +75,20 @@ void test3() {
 	
 }
 
+void test4() {
+	Genome g1("Genome 1", "ACTG");
+	Genome g2("Genome 2", "TCGACT");
+	Genome g3("Genome 3", "TCTCG");
+	GenomeMatcher gm(3);
+	gm.addGenome(g1);
+	gm.addGenome(g2);
+	gm.addGenome(g3);
+	gm.library()->print();
+}
+
 int main() {
-	test1();
+	//test1();
 	//test2();
 	//test3();
+	test4();
 }

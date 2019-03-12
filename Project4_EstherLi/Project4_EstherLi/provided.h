@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <istream>
+#include "Trie.h"
 
 class GenomeImpl;
 
@@ -45,11 +46,22 @@ public:
 	~GenomeMatcher();
 	void addGenome(const Genome& genome);
 	int minimumSearchLength() const;
-	bool findGenomesWithThisDNA(const std::string& fragment, int minimumLength, bool exactMatchOnly, std::vector<DNAMatch>& matches) const;
-	bool findRelatedGenomes(const Genome& query, int fragmentMatchLength, bool exactMatchOnly, double matchPercentThreshold, std::vector<GenomeMatch>& results) const;
+	/*bool findGenomesWithThisDNA(const std::string& fragment, 
+								int minimumLength, 
+								bool exactMatchOnly, 
+								std::vector<DNAMatch>& matches) const;
+	bool findRelatedGenomes(const Genome& query, 
+							int fragmentMatchLength, 
+							bool exactMatchOnly, 
+							double matchPercentThreshold, 
+							std::vector<GenomeMatch>& results) const;*/
 	// We prevent a GenomeMatcher object from being copied or assigned.
 	GenomeMatcher(const GenomeMatcher&) = delete;
 	GenomeMatcher& operator=(const GenomeMatcher&) = delete;
+
+
+	//REMOVE BEFORE TURNING IT IN LMAO
+	Trie<std::string>* library();
 
 private:
 	GenomeMatcherImpl* m_impl;
