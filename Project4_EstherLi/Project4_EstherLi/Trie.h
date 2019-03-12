@@ -7,6 +7,9 @@
 #include <algorithm>
 #include <iostream>
 
+struct FragmentInfo; //remove later
+
+
 
 template<typename ValueType>
 class Trie
@@ -66,7 +69,6 @@ private:
 
 	//private functions for Trie
 	void freeTree(Node* current);
-	std::vector<ValueType> findMe(const std::string& key, bool exactMatchOnly) const;
 
 	//private data member for Trie 
 	Node* m_root;
@@ -185,8 +187,10 @@ void Trie<ValueType>::printMe(Node* current, std::string path) {
 	while (it != current->m_children.end()) {
 		std::cout << path << (*it)->label() << std::endl;
 		printMe((*it)->child(), path + (*it)->label() + '/');
-		for (int i = 0; i < (*it)->child()->m_values.size(); i++)
-			std::cout << (*it)->child()->m_values[i] << std::endl;
+		for (int i = 0; i < (*it)->child()->m_values.size(); i++) {
+			std::cout << (*it)->child()->m_values[i].posInLibrary() << std::endl;
+			std::cout << (*it)->child()->m_values[i].posInGenome() << std::endl;
+		}
 		it++;
 	}
 }

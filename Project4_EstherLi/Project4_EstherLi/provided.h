@@ -6,7 +6,24 @@
 #include <istream>
 #include "Trie.h"
 
+class Genome; 
 class GenomeImpl;
+
+class GenomeMatcher; //remove later
+
+struct FragmentInfo { //remove from here, move to private of GenomeMatcherImpl
+	FragmentInfo(int posInLibrary, int posInGenome) {
+		m_posInLibrary = posInLibrary;
+		m_posInGenome = posInGenome;
+	}
+	int posInLibrary() const { return m_posInLibrary; }
+	int posInGenome() const { return m_posInGenome; }
+	void setPosInLibrary(int posInLibrary) { m_posInLibrary = posInLibrary; }
+	void setPosInGenome(int posInGenome) { m_posInGenome = posInGenome; }
+
+	int m_posInLibrary;
+	int m_posInGenome;
+};
 
 class Genome
 {
@@ -46,11 +63,11 @@ public:
 	~GenomeMatcher();
 	void addGenome(const Genome& genome);
 	int minimumSearchLength() const;
-	/*bool findGenomesWithThisDNA(const std::string& fragment, 
+	bool findGenomesWithThisDNA(const std::string& fragment, 
 								int minimumLength, 
 								bool exactMatchOnly, 
 								std::vector<DNAMatch>& matches) const;
-	bool findRelatedGenomes(const Genome& query, 
+	/*bool findRelatedGenomes(const Genome& query, 
 							int fragmentMatchLength, 
 							bool exactMatchOnly, 
 							double matchPercentThreshold, 
@@ -61,7 +78,7 @@ public:
 
 
 	//REMOVE BEFORE TURNING IT IN LMAO
-	Trie<std::string>* library();
+	Trie<FragmentInfo>* library();
 
 private:
 	GenomeMatcherImpl* m_impl;

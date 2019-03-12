@@ -79,16 +79,42 @@ void test4() {
 	Genome g1("Genome 1", "ACTG");
 	Genome g2("Genome 2", "TCGACT");
 	Genome g3("Genome 3", "TCTCG");
-	GenomeMatcher gm(3);
+	GenomeMatcher gm(3); //minimumSearchLength is 3
 	gm.addGenome(g1);
 	gm.addGenome(g2);
 	gm.addGenome(g3);
 	gm.library()->print();
 }
 
+void test5() {
+	Genome g1("Genome 1", "CGGTGTACNACGACTGGGGATAGAATATCTTGACGTCGTACCGGTTGTAGTCGTTCGACCGAAGGGTTCCGCGCCAGTAC");
+	Genome g2("Genome 2", "TAACAGAGCGGTNATATTGTTACGAATCACGTGCGAGACTTAGAGCCAGAATATGAAGTAGTGATTCAGCAACCAAGCGG");
+	Genome g3("Genome 3", "TTTTGAGCCAGCGACGCGGCTTGCTTAACGAAGCGGAAGAGTAGGTTGGACACATTNGGCGGCACAGCGCTTTTGAGCCA");
+	GenomeMatcher gm(4); //minimumSearchLength is 4
+	gm.addGenome(g1);
+	gm.addGenome(g2);
+	gm.addGenome(g3);
+
+	vector<DNAMatch> matches;
+	bool result;
+	result = gm.findGenomesWithThisDNA("GAAG", 4, true, matches);
+	for (int i = 0; i < matches.size(); i++) {
+		if (result == true)
+			cout << "Result: true" << endl;
+		else
+			cout << "Result: false" << endl;
+		cout << matches[i].genomeName << endl;
+		cout << "length: " << matches[i].length << endl;
+		cout << "position: " << matches[i].position << endl;
+		cout << "" << endl;
+	}
+
+}
+
 int main() {
 	//test1();
 	//test2();
 	//test3();
-	test4();
+	//test4();
+	test5();
 }
