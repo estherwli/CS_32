@@ -146,17 +146,19 @@ std::vector<ValueType> Trie<ValueType>::find(const std::string& key, bool exactM
 	char correct;
 
 	for (int i = 0; i < key.size(); i++) {
-		for (int j = 0; j < curNode->m_children.size(); j++) {
-			curChild = curNode->m_children[j];
-			correct = curChild->label();
-			if (!exactMatchOnly && key[i] != correct && i > 0 && i < key.size() - 1) {
-				std::string snip = key.substr(0, i) + correct + key.substr(i + 1, key.size() - i - 1);
-				temp = find(snip, true);
-				result.insert(result.end(), temp.begin(), temp.end());
-			}
-			else if (!exactMatchOnly && key[i] != correct && i == key.size() - 1) {
-				temp = find(key.substr(0, i) + correct, true);
-				result.insert(result.end(), temp.begin(), temp.end());
+		if (!exactMatchOnly) {
+			for (int j = 0; j < curNode->m_children.size(); j++) {
+				curChild = curNode->m_children[j];
+				correct = curChild->label();
+				if (key[i] != correct && i > 0 && i < key.size() - 1) {
+					std::string snip = key.substr(0, i) + correct + key.substr(i + 1, key.size() - i - 1);
+					temp = find(snip, true);
+					result.insert(result.end(), temp.begin(), temp.end());
+				}
+				else if (key[i] != correct && i == key.size() - 1) {
+					temp = find(key.substr(0, i) + correct, true);
+					result.insert(result.end(), temp.begin(), temp.end());
+				}
 			}
 		}
 		for (int j = 0; j < curNode->m_children.size(); j++) {
@@ -164,7 +166,7 @@ std::vector<ValueType> Trie<ValueType>::find(const std::string& key, bool exactM
 			correct = curChild->label();
 			if (key[i] == correct) {
 				if (i == key.size() - 1)
-					result.insert(result.end(), curChild->child()->m_values.begin(), curChild->child()->m_values.end());
+					return curChild->child()->m_values;
 				curNode = curChild->child();
 				break;
 			}

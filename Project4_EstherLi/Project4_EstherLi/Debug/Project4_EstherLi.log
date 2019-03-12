@@ -6,7 +6,7 @@ c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\trie.h(114): w
           [
               ValueType=int
           ]
-  c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\main.cpp(11): note: see reference to function template instantiation 'void Trie<int>::insert(const std::string &,const ValueType &)' being compiled
+  c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\main.cpp(22): note: see reference to function template instantiation 'void Trie<int>::insert(const std::string &,const ValueType &)' being compiled
           with
           [
               ValueType=int
@@ -26,7 +26,7 @@ c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\trie.h(148): w
               ValueType=int,
               _Ty=int
           ]
-c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\trie.h(149): warning C4018: '<': signed/unsigned mismatch
-c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\trie.h(152): warning C4018: '<': signed/unsigned mismatch
-c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\trie.h(162): warning C4018: '<': signed/unsigned mismatch
+c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\trie.h(150): warning C4018: '<': signed/unsigned mismatch
+c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\trie.h(153): warning C4018: '<': signed/unsigned mismatch
+c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\trie.h(164): warning C4018: '<': signed/unsigned mismatch
   Project4_EstherLi.vcxproj -> C:\Users\Esther\Desktop\CS_32\Project4_EstherLi\Debug\Project4_EstherLi.exe

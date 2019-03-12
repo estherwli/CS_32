@@ -8,16 +8,16 @@ using namespace std;
 
 void test1() {
 	Trie<int> t1;
-	t1.insert("ab", 1); //prints a, then a/b
-	t1.insert("abc", 2); //prints a/b/c
-	t1.insert("ab", 3); //should not print any new paths
-	t1.insert("abcd", 4); //prints a/b/c/d
-	t1.insert("b", 5); //prints b
-	t1.insert("bcd", 6); //prints b/c, then b/c/d
-	t1.insert("abab", 7); //prints a/b/a, then a/b/a/b
-	t1.insert("abcabc", 8);
-	t1.insert("abcab", 9);
-	t1.print();
+	//t1.insert("ab", 1); //prints a, then a/b
+	//t1.insert("abc", 2); //prints a/b/c
+	//t1.insert("ab", 3); //should not print any new paths
+	//t1.insert("abcd", 4); //prints a/b/c/d
+	//t1.insert("b", 5); //prints b
+	//t1.insert("bcd", 6); //prints b/c, then b/c/d
+	//t1.insert("abab", 7); //prints a/b/a, then a/b/a/b
+	//t1.insert("abcabc", 8);
+	//t1.insert("abcab", 9);
+	//t1.print();
 
 	t1.insert("baaaa", 10);
 	t1.insert("abaaa", 11);
@@ -75,7 +75,7 @@ void test3() {
 }
 
 int main() {
-	//test1();
+	test1();
 	//test2();
-	test3();
+	//test3();
 }
