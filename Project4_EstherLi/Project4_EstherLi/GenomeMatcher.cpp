@@ -1,15 +1,12 @@
 #include "provided.h"
-#include "trie.h"
+#include "Trie.h"
 #include <string>
 #include <vector>
-#include <map>
+#include <unordered_map>
 #include <iostream>
 #include <fstream>
 #include <algorithm>
 using namespace std;
-
-
-
 
 class GenomeMatcherImpl
 {
@@ -64,37 +61,50 @@ bool GenomeMatcherImpl::findGenomesWithThisDNA(const string& fragment, int minim
 	if (fragment.size() < minimumLength || minimumLength < minimumSearchLength())
 		return false;
 	vector<FragmentInfo> results;
-	map<int, int[]> compareResults; //int[] = {length, pos}; used to later compare matches from the same Genome
+	unordered_map<int, DNAMatch> compare; //used to later compare matches from the same Genome
+	unordered_map<int, DNAMatch>::iterator it;
 	string match;
-	int h, f;
-	int count = 0;
-	results = m_library.find(fragment, exactMatchOnly); //stores all matches that met the minimumSearchLength requirement
-
+	int h, f, posInLibrary, posInGenome;
+	int count = 0; 
+	bool originalReq = exactMatchOnly;
+	results = m_library.find(fragment.substr(0, minimumSearchLength()), exactMatchOnly); //stores all matches that met the minimumSearchLength requirement
+	
 	for (h = 0; h < results.size(); h++) { //O(h) where h is number of hits 
-		const Genome* curGenome = &m_genomes[results[h].posInLibrary()];
-		curGenome->extract(results[h].posInGenome(), fragment.size(), match); 
-		for (f = 0; f < fragment.size(); f++) { //O(f) where f is the length of fragment
-			if (exactMatchOnly && match[f] != fragment[f]) 
+		exactMatchOnly = originalReq; //ensures previous iteration's changes does not affect the original exactMatchOnly requirement
+		posInLibrary = results[h].posInLibrary();
+		posInGenome = results[h].posInGenome();
+		(m_genomes[posInLibrary]).extract(posInGenome, minimumSearchLength(), match);
+		if (fragment.substr(0, minimumSearchLength()) != match) //the prefix already has 1 mismatch, so treat it like exactMatchOnly from now on
+			exactMatchOnly = true;
+		for (f = minimumSearchLength(); f < fragment.size(); f++) { //O(f) where f is the length of fragment
+			(m_genomes[posInLibrary]).extract(posInGenome, f + 1, match); //extract remaining chars 1 at a time
+			if (exactMatchOnly && match[f] != fragment[f])
 				break;
-			else if (!exactMatchOnly && match[f] != fragment[f]) //there can be 1 mismatch; after that, treat it like exactMatchOnly
-				exactMatchOnly = true; 
+			else if (!exactMatchOnly && match[f] != fragment[f]) //there can be 1 mismatch; treat it like exactMatchOnly from now on
+				exactMatchOnly = true;
 		}
-		int pos = results[h].posInLibrary();
-		if (compareResults.find(pos))
-			DNAMatch newMatch;
-			newMatch.genomeName = m_genomes[pos].name();
-			newMatch.length = f;
-			newMatch.position = results[h].posInGenome();
-			compareResults[pos] = &newMatch;
+		if (f >= minimumLength) {
+			it = compare.find(posInLibrary);
+			if (it == compare.end()) { //this is the first match of its genome
+				DNAMatch bestMatch;
+				bestMatch.genomeName = m_genomes[posInLibrary].name();
+				bestMatch.length = f;
+				bestMatch.position = posInGenome;
+				compare[posInLibrary] = bestMatch; 
+			}
+			else if ((it->second).length < f) { //this match is longer than the previous longest match of its genome
+				(it->second).length = f; 
+				(it->second).position = posInGenome;
+			}
 		}
 	}
-	for (h = 0; h < compareResults.size(); h++) {
-		if (compareResults[h] != nullptr && compareResults[h]->length >= minimumLength) {
-			matches.push_back(*compareResults[h]);
-			count++;
-		}	
+	it = compare.begin();
+	while (it != compare.end()){ //O(h), where h is number of hits
+		matches.push_back(it->second);
+		count++;
+		it++;
 	}
-	if (count == 0) //nothing was added to matches
+	if (count == 0) //nothing was pushed to matches
 		return false;
 	return true;
 }

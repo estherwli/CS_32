@@ -168,7 +168,7 @@ std::vector<ValueType> Trie<ValueType>::find(const std::string& key, bool exactM
 			correct = curChild->label();
 			if (key[i] == correct) {
 				if (i == key.size() - 1)
-					return curChild->child()->m_values;
+					result.insert(result.end(), (curChild->child()->m_values).begin(), (curChild->child()->m_values).end());
 				curNode = curChild->child();
 				break;
 			}

@@ -79,30 +79,38 @@ void test4() {
 	Genome g1("Genome 1", "ACTG");
 	Genome g2("Genome 2", "TCGACT");
 	Genome g3("Genome 3", "TCTCG");
-	GenomeMatcher gm(3); //minimumSearchLength is 3
-	gm.addGenome(g1);
-	gm.addGenome(g2);
-	gm.addGenome(g3);
-	gm.library()->print();
+	Genome g4("Genome 4", "ABAXCDE");
+	GenomeMatcher gm(2); //minimumSearchLength is 3
+	//gm.addGenome(g1);
+	//gm.addGenome(g2);
+	//gm.addGenome(g3);
+	gm.addGenome(g4);
+	vector<FragmentInfo> result = gm.library()->find("AX", false);
+	cout << result.size() << endl;
+	for (int i = 0; i < result.size(); i++)
+		cout << result[i].m_posInGenome << endl;
+
 }
 
 void test5() {
 	Genome g1("Genome 1", "CGGTGTACNACGACTGGGGATAGAATATCTTGACGTCGTACCGGTTGTAGTCGTTCGACCGAAGGGTTCCGCGCCAGTAC");
 	Genome g2("Genome 2", "TAACAGAGCGGTNATATTGTTACGAATCACGTGCGAGACTTAGAGCCAGAATATGAAGTAGTGATTCAGCAACCAAGCGG");
 	Genome g3("Genome 3", "TTTTGAGCCAGCGACGCGGCTTGCTTAACGAAGCGGAAGAGTAGGTTGGACACATTNGGCGGCACAGCGCTTTTGAGCCA");
-	GenomeMatcher gm(4); //minimumSearchLength is 4
+	Genome g4("Genome 4", "ABAXCDE"); //("GAATAC", 2, false, matches) should return pos 2, length 4
+	GenomeMatcher gm(4); //minimumSearchLength is 2
 	gm.addGenome(g1);
 	gm.addGenome(g2);
 	gm.addGenome(g3);
+	gm.addGenome(g4);
 
 	vector<DNAMatch> matches;
 	bool result;
-	result = gm.findGenomesWithThisDNA("GAAG", 4, true, matches);
+	result = gm.findGenomesWithThisDNA("gaaggGTT", 5, false, matches); 
+	if (result == true)
+		cout << "Result: true" << endl;
+	else
+		cout << "Result: false" << endl;
 	for (int i = 0; i < matches.size(); i++) {
-		if (result == true)
-			cout << "Result: true" << endl;
-		else
-			cout << "Result: false" << endl;
 		cout << matches[i].genomeName << endl;
 		cout << "length: " << matches[i].length << endl;
 		cout << "position: " << matches[i].position << endl;
