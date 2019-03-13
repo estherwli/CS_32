@@ -20,7 +20,7 @@ struct FragmentInfo { //remove from here, move to private of GenomeMatcherImpl
 	int posInGenome() const { return m_posInGenome; }
 	void setPosInLibrary(int posInLibrary) { m_posInLibrary = posInLibrary; }
 	void setPosInGenome(int posInGenome) { m_posInGenome = posInGenome; }
-
+//data members
 	int m_posInLibrary;
 	int m_posInGenome;
 };
@@ -67,17 +67,17 @@ public:
 								int minimumLength, 
 								bool exactMatchOnly, 
 								std::vector<DNAMatch>& matches) const;
-	/*bool findRelatedGenomes(const Genome& query, 
+	bool findRelatedGenomes(const Genome& query, 
 							int fragmentMatchLength, 
 							bool exactMatchOnly, 
 							double matchPercentThreshold, 
-							std::vector<GenomeMatch>& results) const;*/
+							std::vector<GenomeMatch>& results) const;
 	// We prevent a GenomeMatcher object from being copied or assigned.
 	GenomeMatcher(const GenomeMatcher&) = delete;
 	GenomeMatcher& operator=(const GenomeMatcher&) = delete;
 
 
-	//REMOVE BEFORE TURNING IT IN LMAO
+	//REMOVE BEFORE TURNING IT IN LMAO //////////////////////////////////////////////////////////////////////////////////////////////////
 	Trie<FragmentInfo>* library();
 
 private:
