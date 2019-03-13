@@ -33,7 +33,7 @@ void test1() {
 	cout << "Passed all tests in test1()." << endl;
 }
 
-void test2(){
+void test2() {
 	Genome g1("dog", "GATTACA");
 	cout << g1.length() << endl;
 	cout << g1.name() << endl;
@@ -54,7 +54,7 @@ void test3() {
 		cout << "Cannot	open " << filename << endl;
 		return;
 	}
-	
+
 	string filename2 = "C:/Users/Esther/Desktop/CS_32/Project4_EstherLi/data/Ferroglobus_placidus.txt";
 	ifstream infile2(filename2);
 	if (!infile2) {
@@ -72,20 +72,20 @@ void test3() {
 	}
 	else
 		cout << "Error loading genome data" << endl;
-	
+
 }
 
 void test4() {
 	Genome g1("Genome 1", "ACTG");
 	Genome g2("Genome 2", "TCGACT");
 	Genome g3("Genome 3", "TCTCG");
-	Genome g4("Genome 4", "ABAXCDE");
+	Genome g4("Genome 4", "AXAXCDE");
 	GenomeMatcher gm(2); //minimumSearchLength is 3
 	//gm.addGenome(g1);
 	//gm.addGenome(g2);
 	//gm.addGenome(g3);
 	gm.addGenome(g4);
-	vector<FragmentInfo> result = gm.library()->find("AX", false);
+	vector<FragmentInfo> result = gm.library()->find("AB", false);
 	cout << result.size() << endl;
 	for (int i = 0; i < result.size(); i++)
 		cout << result[i].m_posInGenome << endl;
@@ -97,25 +97,73 @@ void test5() {
 	Genome g2("Genome 2", "TAACAGAGCGGTNATATTGTTACGAATCACGTGCGAGACTTAGAGCCAGAATATGAAGTAGTGATTCAGCAACCAAGCGG");
 	Genome g3("Genome 3", "TTTTGAGCCAGCGACGCGGCTTGCTTAACGAAGCGGAAGAGTAGGTTGGACACATTNGGCGGCACAGCGCTTTTGAGCCA");
 	Genome g4("Genome 4", "ABAXCDE"); //("GAATAC", 2, false, matches) should return pos 2, length 4
-	GenomeMatcher gm(4); //minimumSearchLength is 2
+	Genome g5("Genome 5", "ABABXDE");
+	Genome g6("Genome 6", "ABABCXE");
+	Genome g7("Genome 7", "ABABCDX");
+	Genome g8("Genome 8", "ABXBCDE");
+	Genome g9("Genome 9", "AXAYCDE");
+	GenomeMatcher gm(4); //minimumSearchLength is 4
+	GenomeMatcher myGM(2); //minimumSearchLength is 2
 	gm.addGenome(g1);
 	gm.addGenome(g2);
 	gm.addGenome(g3);
-	gm.addGenome(g4);
+	myGM.addGenome(g4);
+	myGM.addGenome(g5);
+	myGM.addGenome(g6);
+	myGM.addGenome(g7);
+	myGM.addGenome(g8);
+	myGM.addGenome(g9);
 
 	vector<DNAMatch> matches;
-	bool result;
-	result = gm.findGenomesWithThisDNA("gaaggGTT", 5, false, matches); 
-	if (result == true)
-		cout << "Result: true" << endl;
-	else
-		cout << "Result: false" << endl;
-	for (int i = 0; i < matches.size(); i++) {
-		cout << matches[i].genomeName << endl;
-		cout << "length: " << matches[i].length << endl;
-		cout << "position: " << matches[i].position << endl;
-		cout << "" << endl;
-	}
+	assert(myGM.findGenomesWithThisDNA("AB", 2, true, matches) == true && matches.size() == 5);
+	matches.clear();
+	assert(myGM.findGenomesWithThisDNA("AB", 2, false, matches) == true && matches.size() == 6);
+	matches.clear();
+	assert(myGM.findGenomesWithThisDNA("ABC", 2, true, matches) == true && matches.size() == 5);
+	matches.clear();
+	assert(myGM.findGenomesWithThisDNA("ABC", 3, true, matches) == true && matches.size() == 2);
+	matches.clear();
+	assert(myGM.findGenomesWithThisDNA("ABC", 3, false, matches) == true && matches.size() == 6);
+	matches.clear();
+	assert(myGM.findGenomesWithThisDNA("ABCD", 4, true, matches) == true && matches.size() == 1);
+	matches.clear();
+
+	assert(gm.findGenomesWithThisDNA("GAAG", 4, true, matches) == true && matches.size() == 3);
+	matches.clear();
+	assert(gm.findGenomesWithThisDNA("GAATAC", 4, true, matches) == true && matches.size() == 2);
+	matches.clear();
+	assert(gm.findGenomesWithThisDNA("GAATAC", 6, true, matches) == false && matches.size() == 0);
+	matches.clear();
+	assert(gm.findGenomesWithThisDNA("GAATAC", 6, false, matches) == true && matches.size() == 2);
+	matches.clear();
+	assert(gm.findGenomesWithThisDNA("GTATAT", 6, false, matches) == true && matches.size() == 2);
+	matches.clear();
+	assert(gm.findGenomesWithThisDNA("GAATACG", 6, false, matches) == true && matches.size() == 2);
+	matches.clear();
+	assert(gm.findGenomesWithThisDNA("GAAGGGTT", 5, false, matches) == true && matches.size() == 3);
+	matches.clear();
+	assert(gm.findGenomesWithThisDNA("GAAGGGTT", 6, false, matches) == true && matches.size() == 2);
+	matches.clear();
+	assert(gm.findGenomesWithThisDNA("ACGTGCGAGACTTAGAGCC", 12, false, matches) == true && matches.size() == 1);
+	matches.clear();
+	assert(gm.findGenomesWithThisDNA("ACGTGCGAGACTTAGAGCG", 12, false, matches) == true && matches.size() == 1);
+	matches.clear();
+	assert(gm.findGenomesWithThisDNA("GAAG", 3, true, matches) == false && matches.size() == 0);
+	matches.clear();
+	assert(gm.findGenomesWithThisDNA("GAAG", 5, true, matches) == false && matches.size() == 0);
+
+	//bool result;
+	//result = myGM.findGenomesWithThisDNA("AB", 2, false, matches);
+	//if (result == true)
+	//	cout << "Result: true" << endl;
+	//else
+	//	cout << "Result: false" << endl;
+	//for (int i = 0; i < matches.size(); i++) {
+	//	cout << matches[i].genomeName << endl;
+	//	cout << "length: " << matches[i].length << endl;
+	//	cout << "position: " << matches[i].position << endl;
+	//	cout << "" << endl;
+	//}
 
 }
 
@@ -125,4 +173,5 @@ int main() {
 	//test3();
 	//test4();
 	test5();
+	cout << "Passed all tests!" << endl;
 }

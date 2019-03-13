@@ -1,9 +1,43 @@
-﻿  main.cpp
+﻿  Genome.cpp
+c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\genome.cpp(73): warning C4018: '<': signed/unsigned mismatch
+  GenomeMatcher.cpp
+c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\genomematcher.cpp(61): warning C4018: '<': signed/unsigned mismatch
+c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\genomematcher.cpp(72): warning C4018: '<': signed/unsigned mismatch
+c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\genomematcher.cpp(79): warning C4018: '<': signed/unsigned mismatch
+c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\trie.h(117): warning C4018: '<': signed/unsigned mismatch
+  c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\trie.h(115): note: while compiling class template member function 'void Trie<FragmentInfo>::insert(const std::string &,const ValueType &)'
+          with
+          [
+              ValueType=FragmentInfo
+          ]
+  c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\genomematcher.cpp(51): note: see reference to function template instantiation 'void Trie<FragmentInfo>::insert(const std::string &,const ValueType &)' being compiled
+          with
+          [
+              ValueType=FragmentInfo
+          ]
+  c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\genomematcher.cpp(32): note: see reference to class template instantiation 'Trie<FragmentInfo>' being compiled
+c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\trie.h(119): warning C4018: '<': signed/unsigned mismatch
+c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\trie.h(152): warning C4018: '<': signed/unsigned mismatch
+  c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\trie.h(144): note: while compiling class template member function 'std::vector<ValueType,std::allocator<_Ty>> Trie<ValueType>::find(const std::string &,bool) const'
+          with
+          [
+              ValueType=FragmentInfo,
+              _Ty=FragmentInfo
+          ]
+  c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\genomematcher.cpp(70): note: see reference to function template instantiation 'std::vector<ValueType,std::allocator<_Ty>> Trie<ValueType>::find(const std::string &,bool) const' being compiled
+          with
+          [
+              ValueType=FragmentInfo,
+              _Ty=FragmentInfo
+          ]
+c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\trie.h(154): warning C4018: '<': signed/unsigned mismatch
+c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\trie.h(157): warning C4018: '<': signed/unsigned mismatch
+c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\trie.h(169): warning C4018: '<': signed/unsigned mismatch
+  main.cpp
 c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\main.cpp(30): warning C4018: '<': signed/unsigned mismatch
 c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\main.cpp(90): warning C4018: '<': signed/unsigned mismatch
-c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\main.cpp(113): warning C4018: '<': signed/unsigned mismatch
-c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\trie.h(150): warning C4018: '<': signed/unsigned mismatch
-  c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\trie.h(143): note: while compiling class template member function 'std::vector<FragmentInfo,std::allocator<_Ty>> Trie<FragmentInfo>::find(const std::string &,bool) const'
+c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\trie.h(152): warning C4018: '<': signed/unsigned mismatch
+  c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\trie.h(144): note: while compiling class template member function 'std::vector<FragmentInfo,std::allocator<_Ty>> Trie<FragmentInfo>::find(const std::string &,bool) const'
           with
           [
               _Ty=FragmentInfo
@@ -14,11 +48,11 @@ c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\trie.h(150): w
               _Ty=FragmentInfo
           ]
   c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\main.cpp(88): note: see reference to class template instantiation 'Trie<FragmentInfo>' being compiled
-c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\trie.h(152): warning C4018: '<': signed/unsigned mismatch
-c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\trie.h(155): warning C4018: '<': signed/unsigned mismatch
-c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\trie.h(166): warning C4018: '<': signed/unsigned mismatch
-c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\trie.h(116): warning C4018: '<': signed/unsigned mismatch
-  c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\trie.h(114): note: while compiling class template member function 'void Trie<int>::insert(const std::string &,const ValueType &)'
+c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\trie.h(154): warning C4018: '<': signed/unsigned mismatch
+c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\trie.h(157): warning C4018: '<': signed/unsigned mismatch
+c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\trie.h(169): warning C4018: '<': signed/unsigned mismatch
+c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\trie.h(117): warning C4018: '<': signed/unsigned mismatch
+  c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\trie.h(115): note: while compiling class template member function 'void Trie<int>::insert(const std::string &,const ValueType &)'
           with
           [
               ValueType=int
@@ -29,5 +63,6 @@ c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\trie.h(116): w
               ValueType=int
           ]
   c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\main.cpp(11): note: see reference to class template instantiation 'Trie<int>' being compiled
-c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\trie.h(118): warning C4018: '<': signed/unsigned mismatch
+c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\trie.h(119): warning C4018: '<': signed/unsigned mismatch
+  Generating Code...
   Project4_EstherLi.vcxproj -> C:\Users\Esther\Desktop\CS_32\Project4_EstherLi\Debug\Project4_EstherLi.exe

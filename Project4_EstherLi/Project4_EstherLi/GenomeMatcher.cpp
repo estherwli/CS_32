@@ -68,7 +68,7 @@ bool GenomeMatcherImpl::findGenomesWithThisDNA(const string& fragment, int minim
 	int count = 0; 
 	bool originalReq = exactMatchOnly;
 	results = m_library.find(fragment.substr(0, minimumSearchLength()), exactMatchOnly); //stores all matches that met the minimumSearchLength requirement
-	
+
 	for (h = 0; h < results.size(); h++) { //O(h) where h is number of hits 
 		exactMatchOnly = originalReq; //ensures previous iteration's changes does not affect the original exactMatchOnly requirement
 		posInLibrary = results[h].posInLibrary();
