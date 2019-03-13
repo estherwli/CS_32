@@ -45,7 +45,6 @@ bool GenomeImpl::load(istream& genomeSource, vector<Genome>& genomes)
 		else {
 			c = toupper(c);
 			if (c != 'A' && c != 'C' && c != 'T' && c != 'G' && c != 'N' && c!= '\n') {
-				cout << "here";
 				return false;
 			}
 			sequence += c;
