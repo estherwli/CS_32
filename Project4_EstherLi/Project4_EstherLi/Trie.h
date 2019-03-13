@@ -68,7 +68,7 @@ private:
 		std::vector<Pair*> m_children;
 	};
 
-	//private functions for Trie
+	//helper functions for Trie
 	void freeTree(Node* current);
 
 	//private data member for Trie 
@@ -148,40 +148,40 @@ std::vector<ValueType> Trie<ValueType>::find(const std::string& key, bool exactM
 	Pair* curChild;
 	char correct;
 
-
 	for (int i = 0; i < key.size(); i++) {
 		if (!exactMatchOnly) {
 			for (int j = 0; j < curNode->m_children.size(); j++) {
 				curChild = curNode->m_children[j];
 				correct = curChild->label();
-				if (i > 0 && i < key.size() - 1) {
+				if (i > 0 && i < key.size() - 1 && key[i] != correct) {
 					std::string snip = key.substr(0, i) + correct + key.substr(i + 1, key.size() - i - 1);
 					temp = find(snip, true);
 					result.insert(result.end(), temp.begin(), temp.end());
 				}
-				else if (i == key.size() - 1) {
+				else if (i == key.size() - 1 && key[i] != correct) {
 					temp = find(key.substr(0, i) + correct, true);
 					result.insert(result.end(), temp.begin(), temp.end());
 				}
 			}
 		}
-		if (exactMatchOnly) {
-			for (int j = 0; j < curNode->m_children.size(); j++) {
-				curChild = curNode->m_children[j];
-				correct = curChild->label();
-				if (key[i] == correct) {
-					if (i == key.size() - 1)
-						result.insert(result.end(), (curChild->child()->m_values).begin(), (curChild->child()->m_values).end());
-					curNode = curChild->child();
-					break;
-				}
+		for (int j = 0; j < curNode->m_children.size(); j++) {
+			curChild = curNode->m_children[j];
+			correct = curChild->label();
+			if (key[i] == correct) {
+				if (i == key.size() - 1)
+					result.insert(result.end(), (curChild->child()->m_values).begin(), (curChild->child()->m_values).end());
+				curNode = curChild->child();
+				break;
 			}
 		}
+
 		if (key[i] == correct)
 			continue;
 	}
 	return result;
 }
+
+
 
 template<typename ValueType>
 void Trie<ValueType>::printMe(Node* current, std::string path) {

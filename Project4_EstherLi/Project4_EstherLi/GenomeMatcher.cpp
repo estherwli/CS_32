@@ -28,9 +28,9 @@ public:
 private:
 	struct greater {
 		bool operator()(const pair<string, double>& a, const pair<string, double>& b) const {
-			if (a.second > b.second || a.second == b.second && a.first <= b.first)
+			if (a.second > b.second || (a.second == b.second && a.first <= b.first))
 				return true;
-			if (a.second < b.second || a.second == b.second && a.first > b.first)
+			else
 				return false;
 		}
 	};
@@ -64,31 +64,6 @@ int GenomeMatcherImpl::minimumSearchLength() const
 	return m_minSearchLength;
 }
 
-int GenomeMatcherImpl::partition(vector<pair<string, double>> vec, int low, int high) {
-	int pivotIndex = low;
-	pair<string, double> pivot = vec[low];
-	do {
-		while (low <= high && ((vec[low].second) > pivot.second ||
-			((vec[low].second) == pivot.second) && (vec[low].first <= pivot.first)))
-			low++;
-		while (vec[high].second < pivot.second ||
-			((vec[low].second) == pivot.second) && (vec[low].first > pivot.first))
-			high--;
-		if (low < high)
-			swap(vec[low], vec[high]);
-	} while (low < high);
-	swap(vec[pivotIndex], vec[high]);
-	pivotIndex = high;
-	return pivotIndex;
-}
-
-void GenomeMatcherImpl::quickSort(vector<pair<string, double>> vec, int first, int last) {
-	if (last - first >= 1) {
-		int pivotIndex = partition(vec, first, last);
-		quickSort(vec, first, pivotIndex - 1);
-		quickSort(vec, pivotIndex + 1, last);
-	}
-}
 
 bool GenomeMatcherImpl::findGenomesWithThisDNA(const string& fragment, int minimumLength,
 	bool exactMatchOnly, vector<DNAMatch>& matches) const {
@@ -173,8 +148,10 @@ bool GenomeMatcherImpl::findRelatedGenomes(const Genome& query, int fragmentMatc
 		else
 			tally[itVec->genomeName] += 1.0;
 	}
-	for (itMap = tally.begin(); itMap != tally.end(); itMap++) //move tallied genomes from map to vector to sort
-		toSort.push_back(*itMap);
+	for (itMap = tally.begin(); itMap != tally.end(); itMap++) { //move tallied genomes from map to vector to sort
+		if (100.0 * (itMap->second / numFragments) >= matchPercentThreshold)
+			toSort.push_back(*itMap);
+	}
 	sort(toSort.begin(), toSort.end(), greater());
 	for (itSort = toSort.begin(); itSort != toSort.end(); itSort++) {
 		GenomeMatch gMatch;
@@ -185,7 +162,7 @@ bool GenomeMatcherImpl::findRelatedGenomes(const Genome& query, int fragmentMatc
 	}
 	if (count == 0)
 		return false;
-	return true;	
+	return true;
 }
 
 
