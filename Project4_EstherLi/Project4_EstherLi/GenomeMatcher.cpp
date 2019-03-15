@@ -21,11 +21,12 @@ public:
 	//REMOVE BEFORE TURNING IT IN LMAO
 
 
-	Trie<FragmentInfo>* library() { return &m_library; }
+	//Trie<FragmentInfo>* library() { return &m_library; }
 	/////////////////////////////////////////////////////////////
 
 
 private:
+
 	struct greater {
 		bool operator()(const pair<string, double>& a, const pair<string, double>& b) const {
 			if (a.second > b.second || (a.second == b.second && a.first <= b.first))
@@ -34,8 +35,6 @@ private:
 				return false;
 		}
 	};
-	int partition(vector<pair<string, double>> vec, int low, int high);
-	void quickSort(vector<pair<string, double>> vec, int first, int last);
 	int m_minSearchLength;
 	vector<Genome> m_genomes;
 	Trie<FragmentInfo> m_library;
@@ -101,7 +100,7 @@ bool GenomeMatcherImpl::findGenomesWithThisDNA(const string& fragment, int minim
 				bestMatch.position = posInGenome;
 				compare[posInLibrary] = bestMatch;
 			}
-			else if ((it->second).length < f) { //this match is longer than the previous longest match of its genome
+			else if ((it->second).length < f ||((it->second).length == f && (it->second).position > (posInGenome))) { //this match is longer than the previous longest match of its genome
 				(it->second).length = f;
 				(it->second).position = posInGenome;
 			}
@@ -193,9 +192,9 @@ int GenomeMatcher::minimumSearchLength() const
 
 
 //REMOVE THIS BEFORE TURNING IT IN!!!!!!!!!!!!!!!
-Trie<FragmentInfo>* GenomeMatcher::library() {
-	return m_impl->library();
-}
+//Trie<FragmentInfo>* GenomeMatcher::library() {
+//	return m_impl->library();
+//}
 ////////////////////////////////////////////////////////////
 
 bool GenomeMatcher::findGenomesWithThisDNA(const string& fragment, int minimumLength, bool exactMatchOnly, vector<DNAMatch>& matches) const

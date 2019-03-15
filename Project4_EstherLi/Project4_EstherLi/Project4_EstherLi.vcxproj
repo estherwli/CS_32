@@ -126,6 +126,9 @@
     <ClCompile Include="GenomeMatcher.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="main2.cpp" />
+    <ClCompile Include="testFindDNA.cpp" />
+    <ClCompile Include="testGenome.cpp" />
+    <ClCompile Include="testTrie.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

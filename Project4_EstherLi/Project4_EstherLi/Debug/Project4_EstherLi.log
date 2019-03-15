@@ -1,33 +1,36 @@
-﻿  main.cpp
-c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\main.cpp(30): warning C4018: '<': signed/unsigned mismatch
-c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\main.cpp(95): warning C4018: '<': signed/unsigned mismatch
-c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\main.cpp(193): warning C4018: '<': signed/unsigned mismatch
-c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\trie.h(151): warning C4018: '<': signed/unsigned mismatch
-  c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\trie.h(144): note: while compiling class template member function 'std::vector<FragmentInfo,std::allocator<_Ty>> Trie<FragmentInfo>::find(const std::string &,bool) const'
+﻿  testFindDNA.cpp
+c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\testfinddna.cpp(130): warning C4018: '<': signed/unsigned mismatch
+c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\testfinddna.cpp(140): warning C4018: '<': signed/unsigned mismatch
+c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\testfinddna.cpp(155): warning C4018: '<': signed/unsigned mismatch
+c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\testfinddna.cpp(161): warning C4018: '<': signed/unsigned mismatch
+c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\trie.h(115): warning C4018: '<': signed/unsigned mismatch
+  c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\trie.h(113): note: while compiling class template member function 'void Trie<int>::insert(const std::string &,const ValueType &)'
           with
           [
-              _Ty=FragmentInfo
+              ValueType=int
           ]
-  c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\main.cpp(93): note: see reference to function template instantiation 'std::vector<FragmentInfo,std::allocator<_Ty>> Trie<FragmentInfo>::find(const std::string &,bool) const' being compiled
+  c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\testfinddna.cpp(106): note: see reference to function template instantiation 'void Trie<int>::insert(const std::string &,const ValueType &)' being compiled
           with
           [
-              _Ty=FragmentInfo
+              ValueType=int
           ]
-  c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\main.cpp(93): note: see reference to class template instantiation 'Trie<FragmentInfo>' being compiled
-c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\trie.h(153): warning C4018: '<': signed/unsigned mismatch
-c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\trie.h(156): warning C4018: '<': signed/unsigned mismatch
-c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\trie.h(167): warning C4018: '<': signed/unsigned mismatch
+  c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\testfinddna.cpp(103): note: see reference to class template instantiation 'Trie<int>' being compiled
 c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\trie.h(117): warning C4018: '<': signed/unsigned mismatch
-  c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\trie.h(115): note: while compiling class template member function 'void Trie<int>::insert(const std::string &,const ValueType &)'
+c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\trie.h(150): warning C4018: '<': signed/unsigned mismatch
+  c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\trie.h(142): note: while compiling class template member function 'std::vector<ValueType,std::allocator<_Ty>> Trie<ValueType>::find(const std::string &,bool) const'
           with
           [
-              ValueType=int
+              ValueType=int,
+              _Ty=int
           ]
-  c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\main.cpp(12): note: see reference to function template instantiation 'void Trie<int>::insert(const std::string &,const ValueType &)' being compiled
+  c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\testfinddna.cpp(128): note: see reference to function template instantiation 'std::vector<ValueType,std::allocator<_Ty>> Trie<ValueType>::find(const std::string &,bool) const' being compiled
           with
           [
-              ValueType=int
+              ValueType=int,
+              _Ty=int
           ]
-  c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\main.cpp(11): note: see reference to class template instantiation 'Trie<int>' being compiled
-c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\trie.h(119): warning C4018: '<': signed/unsigned mismatch
+c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\trie.h(151): warning C4018: '<': signed/unsigned mismatch
+c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\trie.h(158): warning C4018: '<': signed/unsigned mismatch
+c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\trie.h(161): warning C4018: '<': signed/unsigned mismatch
+c:\users\esther\desktop\cs_32\project4_estherli\project4_estherli\trie.h(173): warning C4018: '<': signed/unsigned mismatch
   Project4_EstherLi.vcxproj -> C:\Users\Esther\Desktop\CS_32\Project4_EstherLi\Debug\Project4_EstherLi.exe

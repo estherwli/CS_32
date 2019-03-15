@@ -8,7 +8,7 @@
 #include <iostream>
 #include <stack>
 
-struct FragmentInfo; //remove later
+//struct FragmentInfo; //remove later
 
 
 
@@ -34,9 +34,7 @@ private:
 			m_label = label;
 			m_child = child;
 		}
-		~Pair() {} //DO I NEED TO IMPLEMENT THIS LATER?
-
-
+		~Pair() {} 
 
 		//accessor functions
 		char label() { return m_label; }
@@ -73,11 +71,11 @@ private:
 
 	//private data member for Trie 
 	Node* m_root;
-
-public:
-	//************************************
-	void printMe(Node* current, std::string path);
-	void print();
+//
+//public:
+//	//************************************
+//	void printMe(Node* current, std::string path);
+//	void print();
 	//	//************************************
 };
 
@@ -147,14 +145,22 @@ std::vector<ValueType> Trie<ValueType>::find(const std::string& key, bool exactM
 	Node* curNode = m_root;
 	Pair* curChild;
 	char correct;
+	bool firstCorrect = false;
 
 	for (int i = 0; i < key.size(); i++) {
+		for (int j = 0; j < curNode->m_children.size(); j++) {
+			if (curNode->m_children[j]->label() == key[0])
+				firstCorrect = true;
+		}
+		if (!firstCorrect)
+			return {};
 		if (!exactMatchOnly) {
 			for (int j = 0; j < curNode->m_children.size(); j++) {
 				curChild = curNode->m_children[j];
 				correct = curChild->label();
 				if (i > 0 && i < key.size() - 1 && key[i] != correct) {
 					std::string snip = key.substr(0, i) + correct + key.substr(i + 1, key.size() - i - 1);
+					std::cout << i << " " << snip << std::endl;
 					temp = find(snip, true);
 					result.insert(result.end(), temp.begin(), temp.end());
 				}
@@ -174,34 +180,31 @@ std::vector<ValueType> Trie<ValueType>::find(const std::string& key, bool exactM
 				break;
 			}
 		}
-
-		if (key[i] == correct)
-			continue;
 	}
 	return result;
 }
 
 
 
-template<typename ValueType>
-void Trie<ValueType>::printMe(Node* current, std::string path) {
-	if (current == nullptr || current->m_children.empty())
-		return;
-	typename std::vector<Pair*>::iterator it = current->m_children.begin();
-	while (it != current->m_children.end()) {
-		std::cout << path << (*it)->label() << std::endl;
-		printMe((*it)->child(), path + (*it)->label() + '/');
-		for (int i = 0; i < (*it)->child()->m_values.size(); i++) {
-			std::cout << (*it)->child()->m_values[i].posInLibrary() << std::endl;
-			std::cout << (*it)->child()->m_values[i].posInGenome() << std::endl;
-		}
-		it++;
-	}
-}
+//template<typename ValueType>
+//void Trie<ValueType>::printMe(Node* current, std::string path) {
+//	if (current == nullptr || current->m_children.empty())
+//		return;
+//	typename std::vector<Pair*>::iterator it = current->m_children.begin();
+//	while (it != current->m_children.end()) {
+//		std::cout << path << (*it)->label() << std::endl;
+//		printMe((*it)->child(), path + (*it)->label() + '/');
+//		for (int i = 0; i < (*it)->child()->m_values.size(); i++) {
+//			std::cout << (*it)->child()->m_values[i].posInLibrary() << std::endl;
+//			std::cout << (*it)->child()->m_values[i].posInGenome() << std::endl;
+//		}
+//		it++;
+//	}
+//}
 
-template<typename ValueType>
-void Trie<ValueType>::print() {
-	printMe(m_root, "");
-}
+//template<typename ValueType>
+//void Trie<ValueType>::print() {
+//	printMe(m_root, "");
+//}
 
 #endif // TRIE_INCLUDED

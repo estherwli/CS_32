@@ -35,5 +35,14 @@
     <ClCompile Include="main2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="testTrie.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="testGenome.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="testFindDNA.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
